@@ -1,0 +1,10 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="Cosmos.Application/Cosmos.Application.csproj" />
+    <Project Path="Cosmos.Domain/Cosmos.Domain.csproj" />
+    <Project Path="Cosmos.Engine/Cosmos.Engine.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="Cosmos.Engine.Tests/Cosmos.Engine.Tests.csproj" />
+  </Folder>
+</Solution>
