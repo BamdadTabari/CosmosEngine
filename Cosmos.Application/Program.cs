@@ -7,24 +7,32 @@ var universe = new Universe();
 
 var body = new Body(
     new Position(0, 0),
-    new Velocity(10, 0),
+    new Velocity(0, 0),
+    new Acceleration(2, 0),
     new Mass(1));
 
+var body2 = new Body(
+    new Position(100, 0),
+    new Velocity(0, 0),
+    new Acceleration(2, 0),
+    new Mass(2));
+
 universe.AddBody(body);
+universe.AddBody(body2);
 
 IPhysicsModel physics =
     new NewtonianPhysicsModel();
 
-physics.Step(universe, 1);
-
-Console.WriteLine(
-    $"X={body.Position.X}, Y={body.Position.Y}");
-
 for (int i = 0; i < 10; i++)
 {
-    physics.Step(universe, i);
+    physics.Step(universe, 1);
 
     Console.WriteLine(
-        body.Position.X);
+        $"Position: {body.Position.X}");
+
+    Console.WriteLine(
+        $"Velocity: {body.Velocity.X}");
+
+    Console.WriteLine();
 }
 
