@@ -23,6 +23,11 @@ namespace Cosmos.Domain.Structs
         public double Length()
             => Math.Sqrt(X * X + Y * Y);
 
+        public double LengthSquared()
+        {
+            return X * X + Y * Y;
+        }
+
         public Vector2D Normalize()
         {
             var length = Length();
