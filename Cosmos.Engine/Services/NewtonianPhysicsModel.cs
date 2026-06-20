@@ -27,31 +27,29 @@ namespace Cosmos.Engine.Services
                     var direction = new Vector2D(
                         other.Position.X - body.Position.X,
                         other.Position.Y - body.Position.Y
-                        );
+                        ).Normalize();
 
                     const double strength = 10;
 
-                    totalAcceleration += new Vector2D(
-                        direction.X * strength / body.Mass.Value,
-                        direction.Y * strength / body.Mass.Value
-                        );
+                    totalAcceleration +=
+                        direction * (strength / body.Mass.Value);
                 }
 
                 var newVelocity = new Velocity(
-                    body.Velocity.X + 
-                    totalAcceleration.X * deltaTime,
-                    
-                    body.Velocity.Y +
-                    totalAcceleration.Y * deltaTime);
+                body.Velocity.X +
+                totalAcceleration.X * deltaTime,
+
+                body.Velocity.Y +
+                totalAcceleration.Y * deltaTime);
 
                 body.SetVelocity(newVelocity);
 
                 var newPosition = new Position(
                     body.Position.X +
-                    body.Velocity.X * deltaTime,
+                    newVelocity.X * deltaTime,
 
                     body.Position.Y +
-                    body.Velocity.Y * deltaTime);
+                    newVelocity.Y * deltaTime);
 
                 body.SetPosition(newPosition);
             }

@@ -28,10 +28,16 @@ for (int i = 0; i < 10; i++)
     physics.Step(universe, 1);
 
     Console.WriteLine(
-        $"Position: {body.Position.X}");
+        $"Position b1: {body.Position.X}");
 
     Console.WriteLine(
-        $"Velocity: {body.Velocity.X}");
+        $"Velocity b1: {body.Velocity.X}");
+
+    Console.WriteLine(
+        $"Position b2: {body2.Position.X}");
+
+    Console.WriteLine(
+        $"Velocity b2: {body2.Velocity.X}");
 
     Console.WriteLine();
 }
