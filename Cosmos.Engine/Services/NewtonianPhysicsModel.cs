@@ -12,14 +12,20 @@ namespace Cosmos.Engine.Services
     public sealed class NewtonianPhysicsModel
     : IPhysicsModel
     {
+        // TODO:
+        // Current implementation is O(N²).
+        // Optimize with spatial partitioning if simulation size grows.
+        // In other word, CPU will get fucked if you forget this TODO
         public void Step(
             Universe universe,
             double deltaTime)
         {
+            Dictionary<Guid, Vector2D> newVelocities = new();
+
             foreach (var body in universe.Bodies)
             {
                 Vector2D totalAcceleration = new(0, 0);
-
+                
                 foreach(var other in universe.Bodies)
                 {
                     if (body == other) continue;
@@ -63,23 +69,32 @@ namespace Cosmos.Engine.Services
 
                 // Update velocity using acceleration:
                 // v = v + a * dt
-                var newVelocity = new Velocity(
+                var newVelocity = new Vector2D(
                 body.Velocity.X +
                 totalAcceleration.X * deltaTime,
 
                 body.Velocity.Y +
                 totalAcceleration.Y * deltaTime);
 
-                body.SetVelocity(newVelocity);
+                newVelocities.Add(body.Id, newVelocity);
+            }
+
+            foreach (var velocity in newVelocities)
+            {
+                var body = universe.Bodies.SingleOrDefault(x => x.Id == velocity.Key);
+
+                if (body == null) throw new Exception("your universe fucked");
+
+                body.SetVelocity(velocity.Value);
 
                 // Update position using velocity:
                 // p = p + v * dt
-                var newPosition = new Position(
+                var newPosition = new Vector2D(
                     body.Position.X +
-                    newVelocity.X * deltaTime,
+                    velocity.Value.X * deltaTime,
 
                     body.Position.Y +
-                    newVelocity.Y * deltaTime);
+                    velocity.Value.Y * deltaTime);
 
                 body.SetPosition(newPosition);
             }

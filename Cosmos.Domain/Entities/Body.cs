@@ -1,40 +1,35 @@
-﻿using Cosmos.Domain.ValueObjects;
+﻿using Cosmos.Domain.Structs;
+using Cosmos.Domain.ValueObjects;
 
 namespace Cosmos.Domain.Entities
 {
     public sealed class Body
     {
         public Guid Id { get; private set; }
-        public Position Position { get; private set; }
-        public Velocity Velocity { get; private set; }
+        public Vector2D Position { get; private set; }
+        public Vector2D Velocity { get; private set; }
         public Mass Mass { get; }
-        public Acceleration Acceleration { get; private set; }
 
         public Body(
-            Position position,
-            Velocity velocity,
-            Acceleration acceleration,
+            Vector2D position,
+            Vector2D velocity,
             Mass mass)
         {
+            Id = Guid.NewGuid();
             Position = position;
             Velocity = velocity;
             Mass = mass;
-            Acceleration = acceleration;
         }
 
-        public void SetPosition(Position position)
+        public void SetPosition(Vector2D position)
         {
             Position = position;
         }
 
-        public void SetVelocity(Velocity velocity)
+        public void SetVelocity(Vector2D velocity)
         {
             Velocity = velocity;
         }
 
-        public void SetAcceleration(Acceleration acceleration)
-        {
-            Acceleration = acceleration;
-        }
     }
 }
