@@ -1,6 +1,7 @@
 <Solution>
   <Folder Name="/src/">
     <Project Path="Cosmos.Application/Cosmos.Application.csproj" />
+    <Project Path="Cosmos.Desktop/Cosmos.Desktop.csproj" Id="906771a6-9e47-44e2-ba53-c2b3f470fe34" />
     <Project Path="Cosmos.Domain/Cosmos.Domain.csproj" />
     <Project Path="Cosmos.Engine/Cosmos.Engine.csproj" />
   </Folder>
