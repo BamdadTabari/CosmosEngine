@@ -47,7 +47,7 @@ namespace Cosmos.Engine.Services
                     var direction =
                         offset.Normalize();
 
-                    const double G = 50;
+                    const double G = 100;
 
                     // Newton's law of universal gravitation:
                     // F = G * m1 * m2 / r²

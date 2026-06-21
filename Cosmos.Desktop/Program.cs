@@ -12,31 +12,47 @@ IPhysicsModel physics =
 
 var universe = new Universe();
 
-universe.AddBody(
-    new Body(
-        new Vector2D(200, 100),
-        new Vector2D(0, 0),
-        new Mass(15)));
+var giant = new Body(
+    new Vector2D(0, 0),
+    new Vector2D(0, 0),
+    new Mass(100000));
 
-universe.AddBody(
-    new Body(
-        new Vector2D(400, 200),
-        new Vector2D(0, 0),
-        new Mass(25)));
+var small1 = new Body(
+    new Vector2D(80, 0),
+    new Vector2D(0, 350),
+    new Mass(10));
 
-universe.AddBody(
-    new Body(
-        new Vector2D(600, 300),
-        new Vector2D(0, 0),
-        new Mass(35)));
+var small2 = new Body(
+    new Vector2D(140, 0),
+    new Vector2D(0, 270),
+    new Mass(10));
+
+var small3 = new Body(
+    new Vector2D(220, 0),
+    new Vector2D(0, 210),
+    new Mass(10));
+
+universe.AddBody(giant);
+universe.AddBody(small1);
+universe.AddBody(small2);
+universe.AddBody(small3);
+
+Dictionary<Guid, Queue<Vector2D>>
+    Trails = [];
 
 InitWindow(1280, 720, "Cosmos Engine");
 
 SetTargetFPS(60);
 
+const int centerX = 640;
+const int centerY = 360;
+
 while (!WindowShouldClose())
 {
-    physics.Step(universe, 0.01);
+    for (int i = 0; i < 100; i++)
+    {
+        physics.Step(universe, 0.001);
+    }
 
     BeginDrawing();
 
@@ -44,24 +60,48 @@ while (!WindowShouldClose())
 
     foreach (var body in universe.Bodies)
     {
-        DrawBody(body);
+        if (!Trails.ContainsKey(body.Id))
+        {
+            Trails[body.Id] = new Queue<Vector2D>();
+        }
+
+        var trail = Trails[body.Id];
+
+        trail.Enqueue(body.Position);
+
+        while (trail.Count > 300)
+        {
+            trail.Dequeue();
+        }
+
+        foreach (var point in trail)
+        {
+            DrawCircle(
+                centerX + (int)point.X,
+                centerY + (int)point.Y,
+                1,
+                Color.DarkGray);
+        }
+
+        if(body.Mass.Value >10000)
+        {
+            DrawCircle(
+            centerX + (int)body.Position.X,
+            centerY + (int)body.Position.Y,
+            15,
+            Color.White);
+        }
+        else
+        {
+            DrawCircle(
+            centerX + (int)body.Position.X,
+            centerY + (int)body.Position.Y,
+            5,
+            Color.White);
+        }
     }
 
     EndDrawing();
 }
 
 CloseWindow();
-
-//////////////////////
-///
-void DrawBody(Body body)
-{
-    const int centerX = 640;
-    const int centerY = 360;
-
-    DrawCircle(
-        centerX + (int)body.Position.X,
-        centerY + (int)body.Position.Y,
-        5,
-        Color.White);
-}
