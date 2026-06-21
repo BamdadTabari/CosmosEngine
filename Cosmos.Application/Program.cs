@@ -3,54 +3,114 @@ using Cosmos.Domain.Structs;
 using Cosmos.Domain.ValueObjects;
 using Cosmos.Engine.Contracts;
 using Cosmos.Engine.Services;
-using System.Numerics;
+
+// TODO:
+// Temporary simulation playground.
+//
+// This file currently contains:
+// - Scenario creation
+// - User input
+// - Diagnostics
+// - Console rendering
+// - Statistics
+//
+// These concerns should eventually be moved into
+// dedicated components/services.
+//
+// Program.cs is intentionally being used as a sandbox
+// while experimenting with physics models.
 
 var universe = new Universe();
 
-var body = new Body(
-    new Vector2D(36, 3),
-    new Vector2D(0, 0),
-    new Mass(1));
+Console.Write("How many bodies do you want to create? ");
 
-var body2 = new Body(
-    new Vector2D(126, 47),
-    new Vector2D(0, 0),
-    new Mass(2));
+var bodyCount =
+    int.Parse(Console.ReadLine()!);
 
-var body3 = new Body(
-    new Vector2D(29, 19),
-    new Vector2D(0, 0),
-    new Mass(20));
+for (int i = 1; i <= bodyCount; i++)
+{
+    Console.WriteLine();
+    Console.WriteLine($"=== Body {i} ===");
 
-universe.AddBody(body);
-universe.AddBody(body2);
-universe.AddBody(body3);
+    Console.Write("Position X: ");
+    var posX = double.Parse(Console.ReadLine()!);
+
+    Console.Write("Position Y: ");
+    var posY = double.Parse(Console.ReadLine()!);
+
+    Console.Write("Velocity X: ");
+    var velX = double.Parse(Console.ReadLine()!);
+
+    Console.Write("Velocity Y: ");
+    var velY = double.Parse(Console.ReadLine()!);
+
+    Console.Write("Mass: ");
+    var mass = double.Parse(Console.ReadLine()!);
+
+    var body = new Body(
+        new Vector2D(posX, posY),
+        new Vector2D(velX, velY),
+        new Mass(mass));
+
+    universe.AddBody(body);
+}
+
+Console.WriteLine();
+
+Console.Write("Delta Time: ");
+var deltaTime =
+    double.Parse(Console.ReadLine()!);
+
+Console.Write("Number Of Steps: ");
+var stepCount =
+    int.Parse(Console.ReadLine()!);
 
 IPhysicsModel physics =
     new NewtonianPhysicsModel();
 
-for (int i = 0; i < 100; i++)
+for (int step = 1; step <= stepCount; step++)
 {
-    physics.Step(universe, 0.1);
+    physics.Step(universe, deltaTime);
 
-    Console.WriteLine(
-        $"Position b1=> X: {body.Position.X}, Y: {body.Position.Y}");
+    Console.ForegroundColor =
+        ConsoleColor.Cyan;
 
+    Console.WriteLine();
     Console.WriteLine(
-        $"Velocity b1=> X: {body.Velocity.X}, Y: {body.Velocity.Y}");
+        $"================ STEP {step} ================");
 
-    Console.WriteLine(
-    $"Position b2=> X: {body2.Position.X}, Y: {body2.Position.Y}");
+    Console.ResetColor();
 
-    Console.WriteLine(
-    $"Velocity b2=> X: {body2.Velocity.X}, Y: {body2.Velocity.Y}");
+    int index = 1;
 
-    Console.WriteLine(
-    $"Position b3=> X: {body3.Position.X}, Y: {body3.Position.Y}");
+    foreach (var body in universe.Bodies)
+    {
+        var speed =
+            Math.Sqrt(
+                body.Velocity.X * body.Velocity.X +
+                body.Velocity.Y * body.Velocity.Y);
 
-    Console.WriteLine(
-    $"Velocity b3=> X: {body3.Velocity.X}, Y: {body3.Velocity.Y}");
+        if (speed > 100)
+        {
+            Console.ForegroundColor =
+                ConsoleColor.Red;
+        }
+        else
+        {
+            Console.ForegroundColor =
+                ConsoleColor.Green;
+        }
+
+        Console.WriteLine(
+            $"B{index} | " +
+            $"Pos=({body.Position.X:F2}, {body.Position.Y:F2}) " +
+            $"Vel=({body.Velocity.X:F2}, {body.Velocity.Y:F2}) " +
+            $"Speed={speed:F2}");
+
+        Console.ResetColor();
+
+        index++;
+    }
 
     Console.WriteLine();
 }
-
