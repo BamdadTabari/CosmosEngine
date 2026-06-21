@@ -1,116 +1,51 @@
-﻿using Cosmos.Domain.Entities;
+﻿using Cosmos.Application.Renderers;
+using Cosmos.Domain.Entities;
 using Cosmos.Domain.Structs;
 using Cosmos.Domain.ValueObjects;
 using Cosmos.Engine.Contracts;
 using Cosmos.Engine.Services;
 
-// TODO:
-// Temporary simulation playground.
-//
-// This file currently contains:
-// - Scenario creation
-// - User input
-// - Diagnostics
-// - Console rendering
-// - Statistics
-//
-// These concerns should eventually be moved into
-// dedicated components/services.
-//
-// Program.cs is intentionally being used as a sandbox
-// while experimenting with physics models.
+Console.CursorVisible = false;
 
 var universe = new Universe();
 
-Console.Write("How many bodies do you want to create? ");
+var giant = new Body(
+    new Vector2D(0, 0),
+    new Vector2D(0, 0),
+    new Mass(100000));
 
-var bodyCount =
-    int.Parse(Console.ReadLine()!);
+var small1 = new Body(
+    new Vector2D(40, 0),
+    new Vector2D(0, 20),
+    new Mass(10));
 
-for (int i = 1; i <= bodyCount; i++)
-{
-    Console.WriteLine();
-    Console.WriteLine($"=== Body {i} ===");
+var small2 = new Body(
+    new Vector2D(50, 0),
+    new Vector2D(0, 23),
+    new Mass(10));
 
-    Console.Write("Position X: ");
-    var posX = double.Parse(Console.ReadLine()!);
+var small3 = new Body(
+    new Vector2D(60, 0),
+    new Vector2D(0, 17),
+    new Mass(10));
 
-    Console.Write("Position Y: ");
-    var posY = double.Parse(Console.ReadLine()!);
 
-    Console.Write("Velocity X: ");
-    var velX = double.Parse(Console.ReadLine()!);
-
-    Console.Write("Velocity Y: ");
-    var velY = double.Parse(Console.ReadLine()!);
-
-    Console.Write("Mass: ");
-    var mass = double.Parse(Console.ReadLine()!);
-
-    var body = new Body(
-        new Vector2D(posX, posY),
-        new Vector2D(velX, velY),
-        new Mass(mass));
-
-    universe.AddBody(body);
-}
-
-Console.WriteLine();
-
-Console.Write("Delta Time: ");
-var deltaTime =
-    double.Parse(Console.ReadLine()!);
-
-Console.Write("Number Of Steps: ");
-var stepCount =
-    int.Parse(Console.ReadLine()!);
+universe.AddBody(giant);
+universe.AddBody(small1);
+universe.AddBody(small2);
+universe.AddBody(small3);
 
 IPhysicsModel physics =
     new NewtonianPhysicsModel();
 
-for (int step = 1; step <= stepCount; step++)
+var renderer =
+    new ConsoleUniverseRenderer();
+
+while (true)
 {
-    physics.Step(universe, deltaTime);
+    physics.Step(universe, 0.001);
 
-    Console.ForegroundColor =
-        ConsoleColor.Cyan;
+    renderer.Render(universe);
 
-    Console.WriteLine();
-    Console.WriteLine(
-        $"================ STEP {step} ================");
-
-    Console.ResetColor();
-
-    int index = 1;
-
-    foreach (var body in universe.Bodies)
-    {
-        var speed =
-            Math.Sqrt(
-                body.Velocity.X * body.Velocity.X +
-                body.Velocity.Y * body.Velocity.Y);
-
-        if (speed > 100)
-        {
-            Console.ForegroundColor =
-                ConsoleColor.Red;
-        }
-        else
-        {
-            Console.ForegroundColor =
-                ConsoleColor.Green;
-        }
-
-        Console.WriteLine(
-            $"B{index} | " +
-            $"Pos=({body.Position.X:F2}, {body.Position.Y:F2}) " +
-            $"Vel=({body.Velocity.X:F2}, {body.Velocity.Y:F2}) " +
-            $"Speed={speed:F2}");
-
-        Console.ResetColor();
-
-        index++;
-    }
-
-    Console.WriteLine();
+    Thread.Sleep(10);
 }
