@@ -1,4 +1,5 @@
-﻿using Cosmos.Domain.Entities;
+﻿using Cosmos.Desktop;
+using Cosmos.Domain.Entities;
 using Cosmos.Domain.Structs;
 using Cosmos.Domain.ValueObjects;
 using Cosmos.Engine.Contracts;
@@ -9,6 +10,8 @@ using static Raylib_cs.Raylib;
 
 IPhysicsModel physics =
     new NewtonianPhysicsModel();
+
+var camera = new Camera();
 
 var universe = new Universe();
 
@@ -49,6 +52,15 @@ const int centerY = 360;
 
 while (!WindowShouldClose())
 {
+
+    if (camera.Target is not null)
+    {
+        camera.Position =
+            camera.Target.Position;
+    }
+
+    camera.Target = giant;
+
     for (int i = 0; i < 100; i++)
     {
         physics.Step(universe, 0.001);
@@ -60,6 +72,7 @@ while (!WindowShouldClose())
 
     foreach (var body in universe.Bodies)
     {
+
         if (!Trails.ContainsKey(body.Id))
         {
             Trails[body.Id] = new Queue<Vector2D>();
@@ -77,8 +90,10 @@ while (!WindowShouldClose())
         foreach (var point in trail)
         {
             DrawCircle(
-                centerX + (int)point.X,
-                centerY + (int)point.Y,
+                centerX +
+                    (int)(point.X),
+                centerY +
+                    (int)(point.Y),
                 1,
                 Color.DarkGray);
         }
@@ -86,16 +101,20 @@ while (!WindowShouldClose())
         if(body.Mass.Value >10000)
         {
             DrawCircle(
-            centerX + (int)body.Position.X,
-            centerY + (int)body.Position.Y,
+            centerX +
+                    (int)(body.Position.X - camera.Position.X),
+                centerY +
+                    (int)(body.Position.Y - camera.Position.Y),
             15,
             Color.White);
         }
         else
         {
             DrawCircle(
-            centerX + (int)body.Position.X,
-            centerY + (int)body.Position.Y,
+            centerX +
+                    (int)(body.Position.X - camera.Position.X),
+                centerY +
+                    (int)(body.Position.Y - camera.Position.Y),
             5,
             Color.White);
         }
