@@ -7,13 +7,13 @@ namespace Cosmos.Domain.Entities
     {
         public Guid Id { get; private set; }
         public string Name { get; }
-        public Vector2D Position { get; private set; }
-        public Vector2D Velocity { get; private set; }
+        public Vector3D Position { get; private set; }
+        public Vector3D Velocity { get; private set; }
         public Mass Mass { get; }
 
         public Body(
-            Vector2D position,
-            Vector2D velocity,
+            Vector3D position,
+            Vector3D velocity,
             Mass mass,
             string name)
         {
@@ -24,12 +24,12 @@ namespace Cosmos.Domain.Entities
             Name = name;
         }
 
-        public void SetPosition(Vector2D position)
+        public void SetPosition(Vector3D position)
         {
             Position = position;
         }
 
-        public void SetVelocity(Vector2D velocity)
+        public void SetVelocity(Vector3D velocity)
         {
             Velocity = velocity;
         }

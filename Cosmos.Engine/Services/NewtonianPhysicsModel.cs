@@ -20,19 +20,20 @@ namespace Cosmos.Engine.Services
             Universe universe,
             double deltaTime)
         {
-            Dictionary<Guid, Vector2D> newVelocities = new();
+            Dictionary<Guid, Vector3D> newVelocities = new();
 
             foreach (var body in universe.Bodies)
             {
-                Vector2D totalAcceleration = new(0, 0);
+                Vector3D totalAcceleration = new(0, 0, 0);
                 
                 foreach(var other in universe.Bodies)
                 {
                     if (body == other) continue;
 
-                    var offset = new Vector2D(
+                    var offset = new Vector3D(
                         other.Position.X - body.Position.X,
-                        other.Position.Y - body.Position.Y);
+                        other.Position.Y - body.Position.Y,
+                        other.Position.Z - body.Position.Z);
 
                     // Distance squared between two bodies (r²)
                     var distanceSquared =
@@ -69,12 +70,15 @@ namespace Cosmos.Engine.Services
 
                 // Update velocity using acceleration:
                 // v = v + a * dt
-                var newVelocity = new Vector2D(
+                var newVelocity = new Vector3D(
                 body.Velocity.X +
                 totalAcceleration.X * deltaTime,
 
                 body.Velocity.Y +
-                totalAcceleration.Y * deltaTime);
+                totalAcceleration.Y * deltaTime,
+
+                body.Velocity.Z +
+                totalAcceleration.Z * deltaTime);
 
                 newVelocities.Add(body.Id, newVelocity);
             }
@@ -89,12 +93,15 @@ namespace Cosmos.Engine.Services
 
                 // Update position using velocity:
                 // p = p + v * dt
-                var newPosition = new Vector2D(
+                var newPosition = new Vector3D(
                     body.Position.X +
                     velocity.Value.X * deltaTime,
 
                     body.Position.Y +
-                    velocity.Value.Y * deltaTime);
+                    velocity.Value.Y * deltaTime,
+
+                    body.Position.Z +
+                    velocity.Value.Z * deltaTime);
 
                 body.SetPosition(newPosition);
             }

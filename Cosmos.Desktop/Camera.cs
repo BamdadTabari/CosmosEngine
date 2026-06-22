@@ -5,8 +5,8 @@ namespace Cosmos.Desktop;
 
 public sealed class Camera
 {
-    public Vector2D Position { get; set; }
-        = new(0, 0);
+    public Vector3D Position { get; set; }
+        = new(0, 0,0);
 
     public Body? Target { get; set; }
 

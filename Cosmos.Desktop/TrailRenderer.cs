@@ -10,18 +10,26 @@ public sealed class TrailRenderer
     private const int CenterY = 360;
 
     public void Render(
-        Queue<Vector2D> trail,
+        Queue<Vector3D> trail,
         Camera camera)
     {
         foreach (var point in trail)
         {
+            var projectedX =
+    point.X +
+    point.Z * 0.5;
+
+            var projectedY =
+                point.Y -
+                point.Z * 0.5;
+
             DrawCircle(
                 CenterX +
-                (int)((point.X - camera.Position.X)
+                (int)((projectedX - camera.Position.X)
                 * camera.Zoom),
 
                 CenterY +
-                (int)((point.Y - camera.Position.Y)
+                (int)((projectedY - camera.Position.Y)
                 * camera.Zoom),
 
                 1,

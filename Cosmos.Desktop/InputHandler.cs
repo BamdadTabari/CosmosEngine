@@ -122,12 +122,16 @@ public sealed class InputHandler
                 GetMouseDelta();
 
             state.Camera.Position =
-                new Vector2D(
+                new Vector3D(
                     state.Camera.Position.X -
                         delta.X / state.Camera.Zoom,
 
                     state.Camera.Position.Y -
-                        delta.Y / state.Camera.Zoom);
+                        delta.Y / state.Camera.Zoom,
+
+                    0);
+                    //state.Camera.Position.Z -
+                    //    delta. / state.Camera.Zoom);
         }
     }
 }

@@ -21,7 +21,7 @@ public sealed class UniverseRenderer
     public void Render(
         Universe universe,
         Camera camera,
-        Dictionary<Guid, Queue<Vector2D>> trails)
+        Dictionary<Guid, Queue<Vector3D>> trails)
     {
         foreach (var body in universe.Bodies)
         {
@@ -39,7 +39,7 @@ public sealed class UniverseRenderer
             if (!trails.ContainsKey(body.Id))
             {
                 trails[body.Id] =
-                    new Queue<Vector2D>();
+                    new Queue<Vector3D>();
             }
 
             var trail =
@@ -56,18 +56,26 @@ public sealed class UniverseRenderer
                 trail,
                 camera);
 
+            var projectedX =
+            body.Position.X +
+            body.Position.Z * 0.5;
+
+            var projectedY =
+                body.Position.Y -
+                body.Position.Z * 0.5;
+
             DrawCircle(
-                CenterX +
-                (int)((body.Position.X - camera.Position.X)
-                * camera.Zoom),
+    CenterX +
+    (int)((projectedX - camera.Position.X)
+    * camera.Zoom),
 
-                CenterY +
-                (int)((body.Position.Y - camera.Position.Y)
-                * camera.Zoom),
+    CenterY +
+    (int)((projectedY - camera.Position.Y)
+    * camera.Zoom),
 
-                style.Radius,
+    style.Radius,
 
-                style.Color);
+    style.Color);
         }
     }
 
