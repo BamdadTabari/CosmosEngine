@@ -1,40 +1,40 @@
-﻿//using Cosmos.Domain.Structs;
-//using static Raylib_cs.Raylib;
-//using Raylib_cs;
+﻿using Cosmos.Domain.Structs;
+using Raylib_cs;
+using System.Numerics;
+using static Raylib_cs.Raylib;
 
-//namespace Cosmos.Desktop;
+namespace Cosmos.Desktop;
 
-//public sealed class TrailRenderer
-//{
-//    private const int CenterX = 640;
-//    private const int CenterY = 360;
+public sealed class TrailRenderer
+{
+    private const float RenderScale = 2.5f;
 
-//    public void Render(
-//        Queue<Vector3D> trail,
-//        Camera camera)
-//    {
-//        foreach (var point in trail)
-//        {
-//            var projectedX =
-//    point.X +
-//    point.Z * 0.5;
+    public void Render(
+        Queue<Vector3D> trail)
+    {
+        if (trail.Count < 2)
+        {
+            return;
+        }
 
-//            var projectedY =
-//                point.Y -
-//                point.Z * 0.5;
+        var points = trail.ToArray();
 
-//            DrawCircle(
-//                CenterX +
-//                (int)((projectedX - camera.Position.X)
-//                * camera.Zoom),
+        for (int i = 1; i < points.Length; i++)
+        {
+            var start = new Vector3(
+                (float)(points[i - 1].X * RenderScale),
+                (float)(points[i - 1].Y * RenderScale),
+                (float)(points[i - 1].Z * RenderScale));
 
-//                CenterY +
-//                (int)((projectedY - camera.Position.Y)
-//                * camera.Zoom),
+            var end = new Vector3(
+                (float)(points[i].X * RenderScale),
+                (float)(points[i].Y * RenderScale),
+                (float)(points[i].Z * RenderScale));
 
-//                1,
-
-//                Color.DarkGray);
-//        }
-//    }
-//}
+            DrawLine3D(
+                start,
+                end,
+                Color.DarkGray);
+        }
+    }
+}

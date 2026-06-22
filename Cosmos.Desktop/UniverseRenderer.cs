@@ -14,6 +14,9 @@ public sealed class UniverseRenderer
 
     private readonly Dictionary<Guid, BodyRenderInfo> _styles = [];
 
+    private readonly TrailRenderer
+    _trailRenderer = new();
+
     public void Render(
         Universe universe,
         Camera camera,
@@ -32,6 +35,22 @@ public sealed class UniverseRenderer
 
         foreach (var body in universe.Bodies)
         {
+            if (!trails.ContainsKey(body.Id))
+            {
+                trails[body.Id] = new Queue<Vector3D>();
+            }
+
+            var trail = trails[body.Id];
+
+            trail.Enqueue(body.Position);
+
+            while (trail.Count > 1000)
+            {
+                trail.Dequeue();
+            }
+
+            _trailRenderer.Render(trail);
+
             if (!_styles.ContainsKey(body.Id))
             {
                 _styles[body.Id] =
@@ -63,9 +82,7 @@ public sealed class UniverseRenderer
                 (byte)255);
 
             // 🔵 radius scaling
-            float radius = (float)Math.Max(
-                5,
-                Math.Sqrt(body.Mass.Value) / 2);
+            float radius = style.Radius;
 
             DrawSphere(position, radius, shadedColor);
         }
