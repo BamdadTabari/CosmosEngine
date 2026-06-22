@@ -17,6 +17,9 @@ int simulationSpeed = 100;
 
 bool paused = false;
 
+var renderer =
+    new UniverseRenderer();
+
 var universe = new Universe();
 
 var giant = new Body(
@@ -131,62 +134,16 @@ while (!WindowShouldClose())
     foreach (var body in universe.Bodies)
     {
 
-        if (!Trails.ContainsKey(body.Id))
-        {
-            Trails[body.Id] = new Queue<Vector2D>();
-        }
+        BeginDrawing();
 
-        var trail = Trails[body.Id];
+        ClearBackground(Color.Black);
 
-        trail.Enqueue(body.Position);
+        renderer.Render(
+            universe,
+            camera,
+            Trails);
 
-        while (trail.Count > 1000)
-        {
-            trail.Dequeue();
-        }
-
-        foreach (var point in trail)
-        {
-            DrawCircle(
-                centerX +
-                    (int)((point.X - camera.Position.X)
-                    * camera.Zoom),
-
-                centerY +
-                    (int)((point.Y - camera.Position.Y)
-                    * camera.Zoom),
-
-                1,
-                Color.DarkGray);
-        }
-
-        if (body.Mass.Value > 10000)
-        {
-            DrawCircle(
-            centerX +
-(int)((body.Position.X - camera.Position.X)
-* camera.Zoom),
-                centerY +
-(int)((body.Position.Y - camera.Position.Y)
-* camera.Zoom),
-            15,
-            Color.White);
-        }
-        else
-        {
-            DrawCircle(
-             centerX +
-(int)((body.Position.X - camera.Position.X)
-* camera.Zoom),
-                centerY +
-(int)((body.Position.Y - camera.Position.Y)
-* camera.Zoom),
-            5,
-            Color.White);
-        }
+        EndDrawing();
     }
-
-    EndDrawing();
 }
-
 CloseWindow();
