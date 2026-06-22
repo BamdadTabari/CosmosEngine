@@ -9,16 +9,20 @@ public sealed class InputHandler
     public void Handle(
         SimulationState state,
         Body giant,
-        Body small1,
-        Body small2,
-        Body small3)
+        Body alpha,
+        Body beta,
+        Body gamma,
+        Body delta,
+        Body epsilon)
     {
         HandleCameraTarget(
             state,
             giant,
-            small1,
-            small2,
-            small3);
+            alpha,
+            beta,
+            gamma,
+            delta,
+            epsilon);
 
         HandleOrbitCamera(state);
 
@@ -30,21 +34,29 @@ public sealed class InputHandler
     private void HandleCameraTarget(
         SimulationState state,
         Body giant,
-        Body small1,
-        Body small2,
-        Body small3)
+        Body alpha,
+        Body beta,
+        Body gamma,
+        Body delta,
+        Body epsilon)
     {
         if (IsKeyPressed(KeyboardKey.One))
             state.Camera.Target = giant;
 
         if (IsKeyPressed(KeyboardKey.Two))
-            state.Camera.Target = small1;
+            state.Camera.Target = alpha;
 
         if (IsKeyPressed(KeyboardKey.Three))
-            state.Camera.Target = small2;
+            state.Camera.Target = beta;
 
         if (IsKeyPressed(KeyboardKey.Four))
-            state.Camera.Target = small3;
+            state.Camera.Target = gamma;
+
+        if (IsKeyPressed(KeyboardKey.Five))
+            state.Camera.Target = delta;
+
+        if (IsKeyPressed(KeyboardKey.Six))
+            state.Camera.Target = epsilon;
     }
 
     private void HandleOrbitCamera(

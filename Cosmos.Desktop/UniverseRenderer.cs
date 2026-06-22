@@ -10,6 +10,15 @@ public sealed class UniverseRenderer
 {
     private const float RenderScale = 2.5f;
 
+    Vector3 cluster1Center =
+    new Vector3(300, 300, 500);
+
+    Vector3 cluster2Center =
+        new Vector3(450, 380, 400);
+
+    Vector3 cluster3Center =
+        new Vector3(200, 444, 369);
+
     private readonly Random _random = new();
 
     private readonly Dictionary<Guid, BodyRenderInfo> _styles = [];
@@ -17,21 +26,127 @@ public sealed class UniverseRenderer
     private readonly TrailRenderer
     _trailRenderer = new();
 
+    private readonly List<(Vector3 Position, float Radius, Color Color)>
+    _stars = [];
+
+    private Vector3 RandomClusterStar(
+    Vector3 center,
+    float spread)
+    {
+        return new Vector3(
+            center.X + (_random.NextSingle() - 0.5f) * spread,
+            center.Y + (_random.NextSingle() - 0.5f) * spread,
+            center.Z + (_random.NextSingle() - 0.5f) * spread);
+    }
+
+    private void CreateCluster(
+    Vector3 center,
+    float spread)
+    {
+        for (int i = 0; i < 1000; i++)
+        {
+            Color color =
+                _random.NextDouble() switch
+                {
+                    < 0.70 => Color.White,
+                    < 0.85 => Color.SkyBlue,
+                    < 0.95 => Color.Gold,
+                    _ => Color.Orange
+                };
+
+            _stars.Add((
+                RandomClusterStar(
+                    center,
+                    spread),
+
+                (float)(_random.NextDouble() * 1.2 + 0.2),
+
+                color));
+        }
+    }
+    public UniverseRenderer()
+    {
+        CreateCluster(cluster1Center, 300);
+        CreateCluster(cluster2Center, 250);
+        CreateCluster(cluster3Center, 200);
+
+        for (int i = 0; i < 10000; i++)
+        {
+            Color color =
+                _random.NextDouble() switch
+                {
+                    < 0.80 => Color.White,
+                    < 0.95 => Color.SkyBlue,
+                    _ => Color.Gold
+                };
+
+            _stars.Add((
+                new Vector3(
+                    _random.Next(-5000, 5000),
+                    _random.Next(-5000, 5000),
+                    _random.Next(-5000, 5000)),
+                (float)(_random.NextDouble() * 1.5 + 0.3),
+                color));
+        }
+    }
+
+    public void DrawStarsBitch()
+    {
+
+        foreach (var star in _stars)
+        {
+            float pulse =
+             0.8f +
+             0.2f *
+             MathF.Sin(
+                 (float)(GetTime() +
+                 star.Position.X));
+
+            DrawSphere(
+                star.Position,
+                star.Radius * pulse,
+                star.Color);
+        }
+    }
+
     public void Render(
         Universe universe,
         Camera camera,
         Dictionary<Guid, Queue<Vector3D>> trails)
     {
+        var giant = universe.Bodies.FirstOrDefault(x=> x.Name == "Sun");
+        
+
         BeginDrawing();
         ClearBackground(Color.Black);
 
         var raylibCamera =
             BuildCamera(camera);
 
+        DrawCircle(
+    250,
+    180,
+    180,
+    new Color(60, 20, 90, 40));
+
+        DrawCircle(
+            350,
+            220,
+            140,
+            new Color(90, 40, 140, 25));
+
+        DrawCircle(
+            950,
+            300,
+            220,
+            new Color(20, 60, 140, 30));
+
         BeginMode3D(raylibCamera);
 
         DrawGrid(20, 10);
 
+
+        DrawStarsBitch();
 
         foreach (var body in universe.Bodies)
         {
@@ -75,16 +190,58 @@ public sealed class UniverseRenderer
                     1f);
 
             // 🎨 apply depth shading
-            var shadedColor = new Color(
-                (byte)(style.Color.R * depthFactor),
-                (byte)(style.Color.G * depthFactor),
-                (byte)(style.Color.B * depthFactor),
-                (byte)255);
+            //var shadedColor = new Color(
+            //    (byte)(style.Color.R * depthFactor),
+            //    (byte)(style.Color.G * depthFactor),
+            //    (byte)(style.Color.B * depthFactor),
+            //    (byte)255);
 
             // 🔵 radius scaling
             float radius = style.Radius;
 
-            DrawSphere(position, radius, shadedColor);
+            // fake lightning (for now of curse dude! dont judge me dude.)
+            var dx =
+                giant.Position.X -
+                body.Position.X;
+
+            var dy =
+                giant.Position.Y -
+                body.Position.Y;
+
+            var dz =
+                giant.Position.Z -
+                body.Position.Z;
+
+            var distance =
+            Math.Sqrt(
+                dx * dx +
+                dy * dy +
+                dz * dz);
+
+            float lightFactor =
+            (float)Math.Clamp(
+                1.0 - distance / 1000,
+                0.3,
+                1.0);
+
+            var litColor =
+            new Color(
+                (byte)(style.Color.R * lightFactor),
+                (byte)(style.Color.G * lightFactor),
+                (byte)(style.Color.B * lightFactor),
+                (byte)255);
+
+            if (body == giant)
+            {
+                DrawSphere(
+                    position,
+                    radius,
+                    Color.Gold);
+
+                continue;
+            }
+
+            DrawSphere(position, radius, litColor);
         }
 
         EndMode3D();
@@ -92,11 +249,12 @@ public sealed class UniverseRenderer
     }
 
     private float CalculateRadius(Body body)
-    {
-        return (float)Math.Max(
-            5,
-            Math.Sqrt(body.Mass.Value) / 2);
-    }
+{
+    return (float)Math.Clamp(
+        Math.Pow(body.Mass.Value, 0.25),
+        2,
+        25);
+}
 
     private Color RandomColor()
     {
