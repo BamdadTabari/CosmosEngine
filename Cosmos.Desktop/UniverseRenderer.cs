@@ -22,16 +22,13 @@ public sealed class UniverseRenderer
         BeginDrawing();
         ClearBackground(Color.Black);
 
-        BeginMode3D(new Camera3D
-        {
-            Position = new Vector3(300, 150, 300),
-            Target = Vector3.Zero,
-            Up = Vector3.UnitY,
-            FovY = 45,
-            Projection = CameraProjection.Perspective
-        });
+        var raylibCamera =
+            BuildCamera(camera);
+
+        BeginMode3D(raylibCamera);
 
         DrawGrid(20, 10);
+
 
         foreach (var body in universe.Bodies)
         {
@@ -91,5 +88,55 @@ public sealed class UniverseRenderer
             _random.Next(50, 255),
             _random.Next(50, 255),
             255);
+    }
+
+
+    private Camera3D BuildCamera(Camera camera)
+    {
+        double targetX = 0;
+        double targetY = 0;
+        double targetZ = 0;
+
+        if (camera.Target is not null)
+        {
+            targetX = camera.Target.Position.X * RenderScale;
+            targetY = camera.Target.Position.Y * RenderScale;
+            targetZ = camera.Target.Position.Z * RenderScale;
+        }
+
+        var x =
+            targetX +
+            Math.Cos(camera.AngleX)
+            * camera.Distance;
+
+        var z =
+            targetZ +
+            Math.Sin(camera.AngleX)
+            * camera.Distance;
+
+        var y =
+            targetY +
+            Math.Sin(camera.AngleY)
+            * camera.Distance;
+
+        return new Camera3D
+        {
+            Position = new Vector3(
+                (float)x,
+                (float)y,
+                (float)z),
+
+            Target = new Vector3(
+                (float)targetX,
+                (float)targetY,
+                (float)targetZ),
+
+            Up = Vector3.UnitY,
+
+            FovY = 45,
+
+            Projection =
+                CameraProjection.Perspective
+        };
     }
 }

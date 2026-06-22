@@ -21,8 +21,8 @@ var inputHandler =
 var renderer =
     new UniverseRenderer();
 
-var hudRenderer =
-    new HudRenderer();
+//var hudRenderer =
+//    new HudRenderer();
 
 var universe = new Universe();
 
@@ -66,6 +66,11 @@ SetTargetFPS(60);
 while (!WindowShouldClose())
 {
 
+    for (int i = 0; i < 100; i++)
+    {
+        physics.Step(universe, 0.001);
+    }
+
     inputHandler.Handle(
     state,
     giant,
@@ -73,30 +78,15 @@ while (!WindowShouldClose())
     small2,
     small3);
 
-    if (state.Camera.Target is not null)
-    {
-        state.Camera.Position =
-            state.Camera.Target.Position;
-    }
-
-    if (!state.Paused)
-    {
-        for (int i = 0; i < state.SimulationSpeed; i++)
-        {
-            physics.Step(universe, 0.001);
-        }
-    }
-
-
     renderer.Render(
     universe,
     state.Camera,
     Trails);
 
-    hudRenderer.Render(
-    state.Camera,
-    state.SimulationSpeed,
-    state.Paused);
+    //hudRenderer.Render(
+    //state.Camera,
+    //state.SimulationSpeed,
+    //state.Paused);
 
 }
 CloseWindow();
