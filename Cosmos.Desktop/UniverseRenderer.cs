@@ -2,6 +2,7 @@
 using Raylib_cs;
 using Cosmos.Domain.Structs;
 using static Raylib_cs.Raylib;
+using System.Numerics;
 
 namespace Cosmos.Desktop;
 
@@ -15,76 +16,50 @@ public sealed class UniverseRenderer
     private readonly Dictionary<Guid, BodyRenderInfo>
         _styles = [];
 
-    private readonly TrailRenderer
-        _trailRenderer = new();
+    //private readonly TrailRenderer
+    //    _trailRenderer = new();
 
     public void Render(
-        Universe universe,
-        Camera camera,
-        Dictionary<Guid, Queue<Vector3D>> trails)
+    Universe universe,
+    Camera camera,
+    Dictionary<Guid, Queue<Vector3D>> trails)
     {
+        BeginDrawing();
+        ClearBackground(Color.Black);
+
+        // فعلاً بدون camera3D واقعی
+        BeginMode3D(new Camera3D
+        {
+            Position = new Vector3(300, 150, 300),
+            Target = Vector3.Zero,
+            Up = Vector3.UnitY,
+            FovY = 45,
+            Projection = CameraProjection.Perspective
+        });
+
+        DrawGrid(20, 10);
+
         foreach (var body in universe.Bodies)
         {
-            if (!_styles.ContainsKey(body.Id))
-            {
-                _styles[body.Id] =
-                    new BodyRenderInfo(
-                        RandomColor(),
-                        CalculateRadius(body));
-            }
-
-            var style =
-                _styles[body.Id];
-
-            if (!trails.ContainsKey(body.Id))
-            {
-                trails[body.Id] =
-                    new Queue<Vector3D>();
-            }
-
-            var trail =
-                trails[body.Id];
-
-            trail.Enqueue(body.Position);
-
-            while (trail.Count > 1000)
-            {
-                trail.Dequeue();
-            }
-
-            _trailRenderer.Render(
-                trail,
-                camera);
-
-            var projectedX =
-            body.Position.X +
-            body.Position.Z * 0.5;
-
-            var projectedY =
-                body.Position.Y -
-                body.Position.Z * 0.5;
-
-            DrawCircle(
-    CenterX +
-    (int)((projectedX - camera.Position.X)
-    * camera.Zoom),
-
-    CenterY +
-    (int)((projectedY - camera.Position.Y)
-    * camera.Zoom),
-
-    style.Radius,
-
-    style.Color);
+            DrawSphere(
+                new Vector3(
+                    (float)body.Position.X,
+                    (float)body.Position.Y,
+                    (float)body.Position.Z),
+                (float)Math.Max(5, Math.Sqrt(body.Mass.Value) / 2),
+                Color.White);
         }
+
+        EndMode3D();
+        EndDrawing();
     }
 
     private float CalculateRadius(
         Body body)
     {
         return (float)Math.Max(
-            3,
-            Math.Sqrt(body.Mass.Value) / 5);
+    5,
+    Math.Sqrt(body.Mass.Value) / 2);
     }
 
     private Color RandomColor()

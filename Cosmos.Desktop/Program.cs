@@ -87,9 +87,6 @@ while (!WindowShouldClose())
         }
     }
 
-    BeginDrawing();
-
-    ClearBackground(Color.Black);
 
     renderer.Render(
     universe,
@@ -101,6 +98,5 @@ while (!WindowShouldClose())
     state.SimulationSpeed,
     state.Paused);
 
-    EndDrawing();
 }
 CloseWindow();
