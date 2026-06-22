@@ -50,16 +50,30 @@ SetTargetFPS(60);
 const int centerX = 640;
 const int centerY = 360;
 
+
 while (!WindowShouldClose())
 {
 
-    if (camera.Target is not null)
+    if (IsKeyDown(KeyboardKey.Equal))
     {
-        camera.Position =
-            camera.Target.Position;
+        camera.Zoom += 0.01;
     }
 
-    camera.Target = giant;
+    if (IsKeyDown(KeyboardKey.Minus))
+    {
+        camera.Zoom -= 0.01;
+    }
+
+    camera.Zoom =
+    Math.Max(0.1, camera.Zoom);
+
+    //if (camera.Target is not null)
+    //{
+    //    camera.Position =
+    //        camera.Target.Position;
+    //}
+
+    //camera.Target = giant;
 
     for (int i = 0; i < 100; i++)
     {
@@ -82,7 +96,7 @@ while (!WindowShouldClose())
 
         trail.Enqueue(body.Position);
 
-        while (trail.Count > 300)
+        while (trail.Count > 1000)
         {
             trail.Dequeue();
         }
@@ -91,30 +105,34 @@ while (!WindowShouldClose())
         {
             DrawCircle(
                 centerX +
-                    (int)(point.X),
+                    (int)((point.X) * camera.Zoom),
                 centerY +
-                    (int)(point.Y),
+                    (int)((point.Y) * camera.Zoom),
                 1,
                 Color.DarkGray);
         }
 
-        if(body.Mass.Value >10000)
+        if (body.Mass.Value > 10000)
         {
             DrawCircle(
             centerX +
-                    (int)(body.Position.X - camera.Position.X),
+(int)((body.Position.X - camera.Position.X)
+* camera.Zoom),
                 centerY +
-                    (int)(body.Position.Y - camera.Position.Y),
+(int)((body.Position.Y - camera.Position.Y)
+* camera.Zoom),
             15,
             Color.White);
         }
         else
         {
             DrawCircle(
-            centerX +
-                    (int)(body.Position.X - camera.Position.X),
+             centerX +
+(int)((body.Position.X - camera.Position.X)
+* camera.Zoom),
                 centerY +
-                    (int)(body.Position.Y - camera.Position.Y),
+(int)((body.Position.Y - camera.Position.Y)
+* camera.Zoom),
             5,
             Color.White);
         }

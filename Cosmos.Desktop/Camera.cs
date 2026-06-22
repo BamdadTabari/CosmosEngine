@@ -9,4 +9,6 @@ public sealed class Camera
         = new(0, 0);
 
     public Body? Target { get; set; }
+
+    public double Zoom { get; set; } = 1;
 }
