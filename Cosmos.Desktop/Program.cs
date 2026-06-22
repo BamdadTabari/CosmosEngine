@@ -11,36 +11,44 @@ using static Raylib_cs.Raylib;
 IPhysicsModel physics =
     new NewtonianPhysicsModel();
 
-var camera = new Camera();
+var state =
+    new SimulationState();
 
-int simulationSpeed = 100;
+var inputHandler =
+    new InputHandler();
 
-bool paused = false;
 
 var renderer =
     new UniverseRenderer();
+
+var hudRenderer =
+    new HudRenderer();
 
 var universe = new Universe();
 
 var giant = new Body(
     new Vector2D(0, 0),
     new Vector2D(0, 0),
-    new Mass(100000));
+    new Mass(100000),
+    "giant");
 
 var small1 = new Body(
     new Vector2D(80, 0),
     new Vector2D(0, 350),
-    new Mass(10));
+    new Mass(10),
+    "small1");
 
 var small2 = new Body(
     new Vector2D(140, 0),
     new Vector2D(0, 270),
-    new Mass(10));
+    new Mass(10),
+    "small2");
 
 var small3 = new Body(
     new Vector2D(220, 0),
     new Vector2D(0, 210),
-    new Mass(10));
+    new Mass(10),
+    "small3");
 
 universe.AddBody(giant);
 universe.AddBody(small1);
@@ -54,74 +62,26 @@ InitWindow(1280, 720, "Cosmos Engine");
 
 SetTargetFPS(60);
 
-const int centerX = 640;
-const int centerY = 360;
-
 
 while (!WindowShouldClose())
 {
 
-    if (camera.Target is not null)
+    inputHandler.Handle(
+    state,
+    giant,
+    small1,
+    small2,
+    small3);
+
+    if (state.Camera.Target is not null)
     {
-        camera.Position =
-            camera.Target.Position;
+        state.Camera.Position =
+            state.Camera.Target.Position;
     }
 
-    if (IsKeyPressed(KeyboardKey.One))
+    if (!state.Paused)
     {
-        camera.Target = giant;
-    }
-
-    if (IsKeyPressed(KeyboardKey.Two))
-    {
-        camera.Target = small1;
-    }
-
-    if (IsKeyPressed(KeyboardKey.Three))
-    {
-        camera.Target = small2;
-    }
-
-    if (IsKeyPressed(KeyboardKey.Four))
-    {
-        camera.Target = small3;
-    }
-
-    if (IsKeyDown(KeyboardKey.Equal))
-    {
-        camera.Zoom += 0.01;
-    }
-
-    if (IsKeyDown(KeyboardKey.Minus))
-    {
-        camera.Zoom -= 0.01;
-    }
-
-    camera.Zoom =
-    Math.Max(0.1, camera.Zoom);
-
-    if (IsKeyPressed(KeyboardKey.Up))
-    {
-        simulationSpeed += 10;
-    }
-
-    if (IsKeyPressed(KeyboardKey.Down))
-    {
-        simulationSpeed -= 10;
-    }
-
-    simulationSpeed =
-    Math.Max(1, simulationSpeed);
-
-
-    if (IsKeyPressed(KeyboardKey.Space))
-    {
-        paused = !paused;
-    }
-
-    if (!paused)
-    {
-        for (int i = 0; i < simulationSpeed; i++)
+        for (int i = 0; i < state.SimulationSpeed; i++)
         {
             physics.Step(universe, 0.001);
         }
@@ -131,19 +91,20 @@ while (!WindowShouldClose())
 
     ClearBackground(Color.Black);
 
-    foreach (var body in universe.Bodies)
-    {
+    BeginDrawing();
 
-        BeginDrawing();
+    ClearBackground(Color.Black);
 
-        ClearBackground(Color.Black);
+    renderer.Render(
+    universe,
+    state.Camera,
+    Trails);
 
-        renderer.Render(
-            universe,
-            camera,
-            Trails);
+    hudRenderer.Render(
+    state.Camera,
+    state.SimulationSpeed,
+    state.Paused);
 
-        EndDrawing();
-    }
+    EndDrawing();
 }
 CloseWindow();
