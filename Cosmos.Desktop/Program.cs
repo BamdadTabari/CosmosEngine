@@ -13,6 +13,10 @@ IPhysicsModel physics =
 
 var camera = new Camera();
 
+int simulationSpeed = 100;
+
+bool paused = false;
+
 var universe = new Universe();
 
 var giant = new Body(
@@ -54,6 +58,32 @@ const int centerY = 360;
 while (!WindowShouldClose())
 {
 
+    if (camera.Target is not null)
+    {
+        camera.Position =
+            camera.Target.Position;
+    }
+
+    if (IsKeyPressed(KeyboardKey.One))
+    {
+        camera.Target = giant;
+    }
+
+    if (IsKeyPressed(KeyboardKey.Two))
+    {
+        camera.Target = small1;
+    }
+
+    if (IsKeyPressed(KeyboardKey.Three))
+    {
+        camera.Target = small2;
+    }
+
+    if (IsKeyPressed(KeyboardKey.Four))
+    {
+        camera.Target = small3;
+    }
+
     if (IsKeyDown(KeyboardKey.Equal))
     {
         camera.Zoom += 0.01;
@@ -67,17 +97,31 @@ while (!WindowShouldClose())
     camera.Zoom =
     Math.Max(0.1, camera.Zoom);
 
-    //if (camera.Target is not null)
-    //{
-    //    camera.Position =
-    //        camera.Target.Position;
-    //}
-
-    //camera.Target = giant;
-
-    for (int i = 0; i < 100; i++)
+    if (IsKeyPressed(KeyboardKey.Up))
     {
-        physics.Step(universe, 0.001);
+        simulationSpeed += 10;
+    }
+
+    if (IsKeyPressed(KeyboardKey.Down))
+    {
+        simulationSpeed -= 10;
+    }
+
+    simulationSpeed =
+    Math.Max(1, simulationSpeed);
+
+
+    if (IsKeyPressed(KeyboardKey.Space))
+    {
+        paused = !paused;
+    }
+
+    if (!paused)
+    {
+        for (int i = 0; i < simulationSpeed; i++)
+        {
+            physics.Step(universe, 0.001);
+        }
     }
 
     BeginDrawing();
@@ -105,9 +149,13 @@ while (!WindowShouldClose())
         {
             DrawCircle(
                 centerX +
-                    (int)((point.X) * camera.Zoom),
+                    (int)((point.X - camera.Position.X)
+                    * camera.Zoom),
+
                 centerY +
-                    (int)((point.Y) * camera.Zoom),
+                    (int)((point.Y - camera.Position.Y)
+                    * camera.Zoom),
+
                 1,
                 Color.DarkGray);
         }
