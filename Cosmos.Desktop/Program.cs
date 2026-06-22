@@ -91,10 +91,6 @@ while (!WindowShouldClose())
 
     ClearBackground(Color.Black);
 
-    BeginDrawing();
-
-    ClearBackground(Color.Black);
-
     renderer.Render(
     universe,
     state.Camera,

@@ -1,6 +1,7 @@
 ﻿using Cosmos.Domain.Entities;
-using static Raylib_cs.Raylib;
+using Cosmos.Domain.Structs;
 using Raylib_cs;
+using static Raylib_cs.Raylib;
 
 namespace Cosmos.Desktop;
 
@@ -25,6 +26,8 @@ public sealed class InputHandler
         HandleSimulationSpeed(state);
 
         HandlePause(state);
+
+        HandleCameraDrag(state);
     }
 
     private void HandleCameraTarget(
@@ -58,14 +61,13 @@ public sealed class InputHandler
     private void HandleZoom(
         SimulationState state)
     {
-        if (IsKeyDown(KeyboardKey.Equal))
-        {
-            state.Camera.Zoom += 0.01;
-        }
+        var wheel =
+            GetMouseWheelMove();
 
-        if (IsKeyDown(KeyboardKey.Minus))
+        if (wheel != 0)
         {
-            state.Camera.Zoom -= 0.01;
+            state.Camera.Zoom +=
+                wheel * 0.1;
         }
 
         state.Camera.Zoom =
@@ -100,6 +102,32 @@ public sealed class InputHandler
         {
             state.Paused =
                 !state.Paused;
+        }
+    }
+
+
+    private void HandleCameraDrag(SimulationState state)
+    {
+        if (IsMouseButtonPressed(
+            MouseButton.Middle))
+        {
+            state.Camera.Target = null;
+        }
+
+
+        if (IsMouseButtonDown(
+            MouseButton.Middle))
+        {
+            var delta =
+                GetMouseDelta();
+
+            state.Camera.Position =
+                new Vector2D(
+                    state.Camera.Position.X -
+                        delta.X / state.Camera.Zoom,
+
+                    state.Camera.Position.Y -
+                        delta.Y / state.Camera.Zoom);
         }
     }
 }
