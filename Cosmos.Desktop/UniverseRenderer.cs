@@ -10,6 +10,8 @@ public sealed class UniverseRenderer
 {
     private const float RenderScale = 2.5f;
 
+    bool firstTime;
+
     Vector3 cluster1Center =
     new Vector3(300, 300, 500);
 
@@ -21,13 +23,16 @@ public sealed class UniverseRenderer
 
     private readonly Random _random = new();
 
-    private readonly Dictionary<Guid, BodyRenderInfo> _styles = [];
+    private Dictionary<Guid, BodyRenderInfo> _styles =  [];
 
     private readonly TrailRenderer
     _trailRenderer = new();
 
     private readonly List<(Vector3 Position, float Radius, Color Color)>
     _stars = [];
+
+    private readonly List<(int x, int y, Color color)>
+    _bkstars = [];
 
     private Vector3 RandomClusterStar(
     Vector3 center,
@@ -64,48 +69,53 @@ public sealed class UniverseRenderer
                 color));
         }
     }
-    public UniverseRenderer()
-    {
-        CreateCluster(cluster1Center, 300);
-        CreateCluster(cluster2Center, 250);
-        CreateCluster(cluster3Center, 200);
 
-        for (int i = 0; i < 10000; i++)
+    //public UniverseRenderer()
+    //{
+    //    CreateMilkyWayBand();
+    //}
+
+    public void DrawStarsBitch()
+    {
+        foreach (var star in _stars)
         {
+            DrawSphere(
+                star.Position,
+                star.Radius,
+                star.Color);
+        }
+    }
+    private void CreateMilkyWayBand()
+    {
+        for (int i = 0; i < 3000; i++)
+        {
+            float t =
+                (float)(_random.NextDouble() * 12000 - 6000);
+
+            float thickness =
+                (float)(_random.NextDouble() * 600 - 300);
+
+            float depth =
+                (float)(_random.NextDouble() * 1200 - 600);
+
             Color color =
                 _random.NextDouble() switch
                 {
                     < 0.80 => Color.White,
-                    < 0.95 => Color.SkyBlue,
-                    _ => Color.Gold
+                    < 0.92 => Color.SkyBlue,
+                    < 0.98 => Color.Gold,
+                    _ => Color.Orange
                 };
 
             _stars.Add((
                 new Vector3(
-                    _random.Next(-5000, 5000),
-                    _random.Next(-5000, 5000),
-                    _random.Next(-5000, 5000)),
-                (float)(_random.NextDouble() * 1.5 + 0.3),
+                    t,
+                    thickness,
+                    depth),
+
+                (float)(_random.NextDouble() * 0.8 + 0.15),
+
                 color));
-        }
-    }
-
-    public void DrawStarsBitch()
-    {
-
-        foreach (var star in _stars)
-        {
-            float pulse =
-             0.8f +
-             0.2f *
-             MathF.Sin(
-                 (float)(GetTime() +
-                 star.Position.X));
-
-            DrawSphere(
-                star.Position,
-                star.Radius * pulse,
-                star.Color);
         }
     }
 
@@ -123,30 +133,67 @@ public sealed class UniverseRenderer
         var raylibCamera =
             BuildCamera(camera);
 
-        DrawCircle(
-    250,
-    180,
-    180,
-    new Color(60, 20, 90, 40));
+    //    DrawCircle(
+    //250,
+    //180,
+    //180,
+    //new Color(60, 20, 90, 40));
+
+    //    DrawCircle(
+    //        350,
+    //        220,
+    //        140,
+    //        new Color(90, 40, 140, 25));
+
+    //    DrawCircle(
+    //        950,
+    //        300,
+    //        220,
+    //        new Color(20, 60, 140, 30));
 
         DrawCircle(
-            350,
-            220,
-            140,
-            new Color(90, 40, 140, 25));
+    300,
+    200,
+    240,
+    new Color(80, 30, 120, 20));
 
         DrawCircle(
-            950,
-            300,
-            220,
-            new Color(20, 60, 140, 30));
+            420,
+            260,
+            180,
+            new Color(120, 60, 180, 15));
+
+        DrawCircle(
+            900,
+            250,
+            320,
+            new Color(30, 70, 140, 18));
+
+        DrawCircle(
+            1050,
+            320,
+            240,
+            new Color(20, 40, 100, 15));
+
+        //for (int i = 0; i < 10000; i++)
+        //{
+        //    DrawPixel(
+        //        _random.Next(-3000,3000),
+        //        _random.Next(-3000, 3000),
+        //        _random.NextDouble() switch
+        //        {
+        //            < 0.70 => Color.White,
+        //            < 0.85 => Color.SkyBlue,
+        //            < 0.95 => Color.Gold,
+        //            _ => Color.Orange
+        //        });
+        //}
 
         BeginMode3D(raylibCamera);
 
-        DrawGrid(20, 10);
+        //DrawGrid(20, 10);
 
-
-        DrawStarsBitch();
+        //DrawStarsBitch();
 
         foreach (var body in universe.Bodies)
         {
@@ -166,6 +213,7 @@ public sealed class UniverseRenderer
 
             _trailRenderer.Render(trail);
 
+            var kirkhar = _styles.ToList();
             if (!_styles.ContainsKey(body.Id))
             {
                 _styles[body.Id] =
@@ -223,6 +271,8 @@ public sealed class UniverseRenderer
                 1.0 - distance / 1000,
                 0.3,
                 1.0);
+
+            var st = style;
 
             var litColor =
             new Color(

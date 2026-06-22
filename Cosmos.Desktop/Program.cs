@@ -29,79 +29,79 @@ var universe = new Universe();
 var giant = new Body(
     new Vector3D(0, 0, 0),
     new Vector3D(0, 0, 0),
-    new Mass(100000),
+    new Mass(1000000),
     "Sun");
 
 var alpha = new Body(
     new Vector3D(90, 0, 0),
     new Vector3D(0, 330, 0),
-    new Mass(20),
+    new Mass(200),
     "Alpha");
 
 var alphaMoon = new Body(
     new Vector3D(102, 0, 0),
     new Vector3D(0, 395, 0),
-    new Mass(0.5),
+    new Mass(156),
     "AlphaMoon");
 
 var beta = new Body(
     new Vector3D(150, 0, 60),
     new Vector3D(0, 255, 0),
-    new Mass(15),
+    new Mass(150),
     "Beta");
 
 var betaMoon1 = new Body(
     new Vector3D(164, 0, 60),
     new Vector3D(0, 305, 0),
-    new Mass(0.4),
+    new Mass(49),
     "BetaMoon1");
 
 var betaMoon2 = new Body(
     new Vector3D(170, 0, 60),
     new Vector3D(0, 315, 0),
-    new Mass(0.3),
+    new Mass(456),
     "BetaMoon2");
 
 var gamma = new Body(
     new Vector3D(240, 0, -80),
     new Vector3D(0, 205, 0),
-    new Mass(35),
+    new Mass(569),
     "Gamma");
 
 var delta = new Body(
     new Vector3D(340, 0, 100),
     new Vector3D(0, 175, 0),
-    new Mass(25),
+    new Mass(250),
     "Delta");
 
 var deltaMoon = new Body(
     new Vector3D(356, 0, 100),
     new Vector3D(0, 220, 0),
-    new Mass(0.6),
+    new Mass(666),
     "DeltaMoon");
 
 var epsilon = new Body(
     new Vector3D(470, 0, -140),
     new Vector3D(0, 145, 0),
-    new Mass(50),
+    new Mass(500),
     "Epsilon");
 
 var epsilonMoon1 = new Body(
     new Vector3D(486, 0, -140),
     new Vector3D(0, 180, 0),
-    new Mass(0.5),
+    new Mass(1356),
     "EpsilonMoon1");
 
 var epsilonMoon2 = new Body(
     new Vector3D(493, 0, -140),
     new Vector3D(0, 188, 0),
-    new Mass(0.4),
+    new Mass(114),
     "EpsilonMoon2");
 
 var epsilonMoon3 = new Body(
     new Vector3D(501, 0, -140),
     new Vector3D(0, 196, 0),
-    new Mass(0.3),
+    new Mass(113),
     "EpsilonMoon3");
 
 
@@ -139,6 +139,8 @@ state.Camera.Distance = 800;
 state.Camera.AngleX = 0.8;
 
 state.Camera.AngleY = 0.35;
+
+
 
 while (!WindowShouldClose())
 {

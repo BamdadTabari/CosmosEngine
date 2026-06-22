@@ -72,7 +72,7 @@ public sealed class InputHandler
                 50,
                 2000);
 
-        if (IsMouseButtonDown(MouseButton.Middle))
+        if (IsMouseButtonDown(MouseButton.Right))
         {
             var delta = GetMouseDelta();
 
