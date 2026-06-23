@@ -7,22 +7,12 @@ namespace Cosmos.Desktop;
 public sealed class InputHandler
 {
     public void Handle(
-        SimulationState state,
-        Body giant,
-        Body alpha,
-        Body beta,
-        Body gamma,
-        Body delta,
-        Body epsilon)
+    SimulationState state,
+    Universe universe)
     {
         HandleCameraTarget(
             state,
-            giant,
-            alpha,
-            beta,
-            gamma,
-            delta,
-            epsilon);
+            universe);
 
         HandleOrbitCamera(state);
 
@@ -32,31 +22,35 @@ public sealed class InputHandler
     }
 
     private void HandleCameraTarget(
-        SimulationState state,
-        Body giant,
-        Body alpha,
-        Body beta,
-        Body gamma,
-        Body delta,
-        Body epsilon)
+    SimulationState state,
+    Universe universe)
     {
-        if (IsKeyPressed(KeyboardKey.One))
-            state.Camera.Target = giant;
+        var bodies =
+            universe.Bodies.ToList();
 
-        if (IsKeyPressed(KeyboardKey.Two))
-            state.Camera.Target = alpha;
+        if (IsKeyPressed(KeyboardKey.One)
+            && bodies.Count > 0)
+        {
+            state.Camera.Target = bodies[0];
+        }
 
-        if (IsKeyPressed(KeyboardKey.Three))
-            state.Camera.Target = beta;
+        if (IsKeyPressed(KeyboardKey.Two)
+            && bodies.Count > 1)
+        {
+            state.Camera.Target = bodies[1];
+        }
 
-        if (IsKeyPressed(KeyboardKey.Four))
-            state.Camera.Target = gamma;
+        if (IsKeyPressed(KeyboardKey.Three)
+            && bodies.Count > 2)
+        {
+            state.Camera.Target = bodies[2];
+        }
 
-        if (IsKeyPressed(KeyboardKey.Five))
-            state.Camera.Target = delta;
-
-        if (IsKeyPressed(KeyboardKey.Six))
-            state.Camera.Target = epsilon;
+        if (IsKeyPressed(KeyboardKey.Four)
+            && bodies.Count > 3)
+        {
+            state.Camera.Target = bodies[3];
+        }
     }
 
     private void HandleOrbitCamera(
