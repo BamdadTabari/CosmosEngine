@@ -1,8 +1,9 @@
-﻿using System.Text.Json;
-using Cosmos.Desktop.Dtos;
+﻿using Cosmos.Desktop.Dtos;
 using Cosmos.Domain.Entities;
+using Cosmos.Domain.Enums;
 using Cosmos.Domain.Structs;
 using Cosmos.Domain.ValueObjects;
+using System.Text.Json;
 
 namespace Cosmos.Desktop;
 
@@ -15,14 +16,23 @@ public sealed class UniverseLoader
             File.ReadAllText(filePath);
 
         var bodyDtos =
-            JsonSerializer.Deserialize<List<BodyDto>>(json)
-            ?? [];
+    JsonSerializer.Deserialize<List<BodyDto>>(
+        json,
+        new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        })
+    ?? [];
 
         var universe =
             new Universe();
 
         foreach (var dto in bodyDtos)
         {
+            var type =
+                Enum.Parse<BodyType>(
+                dto.Type);
+
             var body =
                 new Body(
                     new Vector3D(
@@ -37,7 +47,8 @@ public sealed class UniverseLoader
 
                     new Mass(dto.Mass),
 
-                    dto.Name);
+                    dto.Name,
+                    type);
 
             universe.AddBody(body);
         }

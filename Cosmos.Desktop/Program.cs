@@ -40,8 +40,8 @@ SetTargetFPS(60);
 
 
 var sun =
-universe.Bodies
-    .First(x => x.Name == "Sun");
+universe
+    .FindBody("Sun");
 
 state.Camera.Target = sun;
 
@@ -54,6 +54,8 @@ while (!WindowShouldClose())
     {
         physics.Step(universe, 0.001);
     }
+
+    inputHandler.Handle(state,universe);
 
     renderer.Render(
     universe,

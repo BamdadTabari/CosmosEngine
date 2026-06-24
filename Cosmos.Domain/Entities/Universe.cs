@@ -16,5 +16,12 @@ namespace Cosmos.Domain.Entities
         {
             _bodies.Add(body);
         }
+
+        public Body? FindBody(
+            string name)
+        {
+            return Bodies.FirstOrDefault(
+                x => x.Name == name);
+        }
     }
 }

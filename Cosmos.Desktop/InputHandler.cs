@@ -27,30 +27,41 @@ public sealed class InputHandler
     {
         var bodies =
             universe.Bodies.ToList();
+        
 
-        if (IsKeyPressed(KeyboardKey.One)
-            && bodies.Count > 0)
+        if (IsKeyPressed(KeyboardKey.R))
         {
-            state.Camera.Target = bodies[0];
+            state.Camera.Target =
+                universe.FindBody("Sun");
         }
 
-        if (IsKeyPressed(KeyboardKey.Two)
-            && bodies.Count > 1)
+        if (IsKeyPressed(KeyboardKey.Right))
         {
-            state.Camera.Target = bodies[1];
+            state.SelectedBodyIndex++;
+
+            if (state.SelectedBodyIndex >= bodies.Count)
+            {
+                state.SelectedBodyIndex = 0;
+            }
+
+            state.Camera.Target =
+                bodies[state.SelectedBodyIndex];
         }
 
-        if (IsKeyPressed(KeyboardKey.Three)
-            && bodies.Count > 2)
+        if (IsKeyPressed(KeyboardKey.Left))
         {
-            state.Camera.Target = bodies[2];
+            state.SelectedBodyIndex--;
+
+            if (state.SelectedBodyIndex < 0)
+            {
+                state.SelectedBodyIndex =
+                    bodies.Count - 1;
+            }
+
+            state.Camera.Target =
+                bodies[state.SelectedBodyIndex];
         }
 
-        if (IsKeyPressed(KeyboardKey.Four)
-            && bodies.Count > 3)
-        {
-            state.Camera.Target = bodies[3];
-        }
     }
 
     private void HandleOrbitCamera(

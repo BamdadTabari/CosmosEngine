@@ -11,5 +11,7 @@ namespace Cosmos.Desktop
         public bool Paused { get; set; }
 
         public Camera Camera { get; set; } = new();
+
+        public int SelectedBodyIndex { get; set; }
     }
 }

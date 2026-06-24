@@ -8,6 +8,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Data\solar-system.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Data\solar-system.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Raylib-cs" Version="8.0.0" />
   </ItemGroup>
 
