@@ -7,5 +7,6 @@ namespace Cosmos.Desktop
     public sealed record OrbitalStatistics(
     double Distance,
     double Speed,
-    double Acceleration);
+    double Acceleration,
+    double Eccentricity);
 }

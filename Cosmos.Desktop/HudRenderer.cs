@@ -94,6 +94,13 @@ public sealed class HudRenderer
             190,
             20,
             Color.White);
+
+        DrawText(
+            $"Eccentricity: {stats.Eccentricity:F3}",
+            20,
+            205,
+            20,
+            Color.Lime);
     }
 }
 
