@@ -12,6 +12,7 @@ namespace Cosmos.Domain.Entities
         public Vector3D Velocity { get; private set; }
         public Mass Mass { get; }
         public BodyType Type { get; }
+        public Vector3D Acceleration { get; set; } = new Vector3D(0,0,0);
 
         public Body(
             Vector3D position,

@@ -6,6 +6,10 @@ namespace Cosmos.Desktop;
 
 public sealed class HudRenderer
 {
+
+    private readonly OrbitalStatisticsCalculator
+    _statistics = new();
+
     public void Render(
         Universe universe,
         Camera camera,
@@ -40,17 +44,8 @@ public sealed class HudRenderer
         var body =
             camera.Target;
 
-        var speed =
-            Math.Sqrt(
-                body.Velocity.X * body.Velocity.X +
-                body.Velocity.Y * body.Velocity.Y +
-                body.Velocity.Z * body.Velocity.Z);
-
-        var distance =
-            Math.Sqrt(
-                body.Position.X * body.Position.X +
-                body.Position.Y * body.Position.Y +
-                body.Position.Z * body.Position.Z);
+        var stats =
+            _statistics.Calculate(body);
 
         DrawText(
             $"Target: {body.Name}",
@@ -74,14 +69,14 @@ public sealed class HudRenderer
             Color.White);
 
         DrawText(
-            $"Velocity: {speed:F1}",
+            $"Velocity: {stats.Speed:F1}",
             20,
             125,
             20,
             Color.White);
 
         DrawText(
-            $"Distance: {distance:F1}",
+            $"Distance: {stats.Distance:F1}",
             20,
             150,
             20,
@@ -93,5 +88,12 @@ public sealed class HudRenderer
             175,
             20,
             Color.White);
-            }
+        DrawText(
+            $"Target Acceleration: {stats.Acceleration}",
+            20,
+            190,
+            20,
+            Color.White);
+    }
 }
+

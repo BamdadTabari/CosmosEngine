@@ -66,6 +66,8 @@ namespace Cosmos.Engine.Services
 
                     totalAcceleration +=
                         direction * accelerationMagnitude;
+
+                    body.Acceleration = totalAcceleration;
                 }
 
                 // Update velocity using acceleration:
