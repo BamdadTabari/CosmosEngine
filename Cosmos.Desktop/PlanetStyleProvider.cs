@@ -19,6 +19,7 @@ public sealed class PlanetStyleProvider
     public BodyRenderInfo GetStyle(
         Body body)
     {
+        var kirkhar = _config.Styles;
         var style =
             _config.Styles[
                 body.Type.ToString()];

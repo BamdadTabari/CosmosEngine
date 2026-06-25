@@ -20,6 +20,13 @@ var inputHandler =
 var styleLoader =
     new StyleLoader();
 
+var loader =
+    new UniverseLoader();
+
+var universe =
+    loader.Load(
+        "Data/solar-system.json");
+
 var styleConfig =
     styleLoader.Load(
         "Data/body-styles.json");
@@ -31,13 +38,6 @@ var renderer =
 
 var hudRenderer =
     new HudRenderer();
-
-var loader =
-    new UniverseLoader();
-
-var universe =
-    loader.Load(
-        "Data/solar-system.json");
 
 Dictionary<Guid, Queue<Vector3D>>
     Trails = [];
@@ -71,9 +71,9 @@ while (!WindowShouldClose())
     Trails);
 
     hudRenderer.Render(
+    universe,
     state.Camera,
-    state.SimulationSpeed,
-    state.Paused);
+    state.SimulationSpeed);
 
 }
 CloseWindow();
