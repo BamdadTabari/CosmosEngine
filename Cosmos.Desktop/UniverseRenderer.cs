@@ -10,10 +10,8 @@ public sealed class UniverseRenderer
 {
     private const float RenderScale = 2.5f;
 
-    private readonly Random _random = new();
-
-    private readonly Dictionary<Guid, BodyRenderInfo>
-        _styles = [];
+    private readonly PlanetStyleProvider
+    _styleProvider = new();
 
     private readonly TrailRenderer
         _trailRenderer = new();
@@ -73,16 +71,8 @@ public sealed class UniverseRenderer
         Body body,
         Universe universe)
     {
-        if (!_styles.ContainsKey(body.Id))
-        {
-            _styles[body.Id] =
-                new BodyRenderInfo(
-                    RandomColor(),
-                    CalculateRadius(body));
-        }
-
         var style =
-            _styles[body.Id];
+            _styleProvider.GetStyle(body);
 
         var position =
             new Vector3(
@@ -134,24 +124,6 @@ public sealed class UniverseRenderer
             320,
             240,
             new Color(20, 40, 100, 15));
-    }
-
-    private float CalculateRadius(
-        Body body)
-    {
-        return (float)Math.Clamp(
-            Math.Pow(body.Mass.Value, 0.25),
-            2,
-            25);
-    }
-
-    private Color RandomColor()
-    {
-        return new Color(
-            _random.Next(50, 255),
-            _random.Next(50, 255),
-            _random.Next(50, 255),
-            255);
     }
 
     private Camera3D BuildCamera(
