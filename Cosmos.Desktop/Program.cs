@@ -17,9 +17,17 @@ var state =
 var inputHandler =
     new InputHandler();
 
+var styleLoader =
+    new StyleLoader();
+
+var styleConfig =
+    styleLoader.Load(
+        "Data/body-styles.json");
 
 var renderer =
-    new UniverseRenderer();
+    new UniverseRenderer(
+        new PlanetStyleProvider(
+            styleConfig));
 
 var hudRenderer =
     new HudRenderer();

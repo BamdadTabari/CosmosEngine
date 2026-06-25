@@ -10,11 +10,18 @@ public sealed class UniverseRenderer
 {
     private const float RenderScale = 2.5f;
 
-    private readonly PlanetStyleProvider
-    _styleProvider = new();
-
     private readonly TrailRenderer
-        _trailRenderer = new();
+    _trailRenderer = new();
+
+    private readonly PlanetStyleProvider
+    _styleProvider;
+
+    public UniverseRenderer(
+        PlanetStyleProvider styleProvider)
+    {
+        _styleProvider =
+            styleProvider;
+    }
 
     public void Render(
         Universe universe,

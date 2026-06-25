@@ -1,0 +1,23 @@
+{
+  "styles": {
+    "Star": {
+      "color": "Gold",
+      "radiusMultiplier": 1.5
+    },
+
+    "Planet": {
+      "color": "SkyBlue",
+      "radiusMultiplier": 1.0
+    },
+
+    "Moon": {
+      "color": "LightGray",
+      "radiusMultiplier": 0.7
+    },
+
+    "Asteroid": {
+      "color": "Brown",
+      "radiusMultiplier": 0.4
+    }
+  }
+}

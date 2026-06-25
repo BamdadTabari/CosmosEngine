@@ -1,4 +1,5 @@
-﻿using Cosmos.Domain.Entities;
+﻿using Cosmos.Desktop.Configs;
+using Cosmos.Domain.Entities;
 using Cosmos.Domain.Enums;
 using Raylib_cs;
 
@@ -6,39 +7,42 @@ namespace Cosmos.Desktop;
 
 public sealed class PlanetStyleProvider
 {
+    private readonly BodyStyleConfig
+        _config;
+
+    public PlanetStyleProvider(
+        BodyStyleConfig config)
+    {
+        _config = config;
+    }
+
     public BodyRenderInfo GetStyle(
         Body body)
     {
-        return body.Type switch
+        var style =
+            _config.Styles[
+                body.Type.ToString()];
+
+        return new BodyRenderInfo(
+            ParseColor(style.Color),
+            CalculateRadius(body)
+            * (float)style.RadiusMultiplier);
+    }
+
+    private static Color ParseColor(
+        string color)
+    {
+        return color switch
         {
-            BodyType.Star =>
-                new BodyRenderInfo(
-                    Color.Gold,
-                    20),
-
-            BodyType.Planet =>
-                new BodyRenderInfo(
-                    Color.SkyBlue,
-                    CalculateRadius(body)),
-
-            BodyType.Moon =>
-                new BodyRenderInfo(
-                    Color.LightGray,
-                    CalculateRadius(body)),
-
-            BodyType.Asteroid =>
-                new BodyRenderInfo(
-                    Color.Brown,
-                    CalculateRadius(body)),
-
-            _ =>
-                new BodyRenderInfo(
-                    Color.White,
-                    CalculateRadius(body))
+            "Gold" => Color.Gold,
+            "SkyBlue" => Color.SkyBlue,
+            "LightGray" => Color.LightGray,
+            "Brown" => Color.Brown,
+            _ => Color.White
         };
     }
 
-    private float CalculateRadius(
+    private static float CalculateRadius(
         Body body)
     {
         return (float)Math.Clamp(
