@@ -6,7 +6,7 @@ namespace Cosmos.Desktop
 {
     public sealed class SimulationState
     {
-        public int SimulationSpeed { get; set; }
+        public int SimulationSpeed { get; set; } = 100;
 
         public bool Paused { get; set; }
 

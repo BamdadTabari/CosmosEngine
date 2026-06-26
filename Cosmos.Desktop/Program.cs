@@ -15,6 +15,9 @@ IPhysicsModel physics =
     new NewtonianPhysicsModel(
         integrator);
 
+var orbitalTracker =
+    new OrbitalTracker();
+
 var state =
     new SimulationState();
 
@@ -61,23 +64,32 @@ state.Camera.Target = sun;
 
 while (!WindowShouldClose())
 {
+    inputHandler.Handle(
+        state,
+        universe);
 
-    for (int i = 0; i < 100; i++)
+    if (!state.Paused)
     {
-        physics.Step(universe, 0.001);
+        for (int i = 0; i < state.SimulationSpeed; i++)
+        {
+            physics.Step(
+                universe,
+                0.001);
+
+            orbitalTracker.Update(
+                universe.Bodies);
+        }
     }
 
-    inputHandler.Handle(state,universe);
-
     renderer.Render(
-    universe,
-    state.Camera,
-    Trails);
+        universe,
+        state.Camera,
+        Trails);
 
     hudRenderer.Render(
-    universe,
-    state.Camera,
-    state.SimulationSpeed);
-
+        universe,
+        state.Camera,
+        state.SimulationSpeed,
+        orbitalTracker);
 }
 CloseWindow();

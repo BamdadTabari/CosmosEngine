@@ -1,6 +1,7 @@
 ﻿using Cosmos.Domain.Entities;
-using static Raylib_cs.Raylib;
 using Raylib_cs;
+using System.Diagnostics;
+using static Raylib_cs.Raylib;
 
 namespace Cosmos.Desktop;
 
@@ -13,7 +14,8 @@ public sealed class HudRenderer
     public void Render(
         Universe universe,
         Camera camera,
-        int simulationSpeed)
+        int simulationSpeed,
+        OrbitalTracker orbitalTracker)
     {
         DrawRectangle(
             10,
@@ -101,6 +103,20 @@ public sealed class HudRenderer
             205,
             20,
             Color.Lime);
+
+        DrawText(
+    $"Periapsis: {orbitalTracker.GetPeriapsis(body):0.00}",
+    20,
+    220,
+    20,
+    Color.White);
+
+        DrawText(
+            $"Apoapsis: {orbitalTracker.GetApoapsis(body):0.00}",
+            20,
+            235,
+            20,
+            Color.White);
     }
 }
 
