@@ -11,6 +11,10 @@ public sealed class HudRenderer
     _energyCalculator =
         new();
 
+    private readonly EscapeVelocityCalculator
+    _escapeVelocityCalculator =
+        new();
+
     public void Render(
         Universe universe,
         Camera camera,
@@ -150,6 +154,43 @@ public sealed class HudRenderer
                 20,
                 Color.Green);
         }
+
+        var escapeVelocity =
+    _escapeVelocityCalculator.Calculate(
+        selectedBody,
+        sun);
+
+        DrawText(
+            $"Escape Velocity: {escapeVelocity:F2}",
+            20,
+            350,
+            20,
+            Color.Yellow);
+
+        var currentSpeed =
+    Math.Sqrt(
+        selectedBody.Velocity.X *
+        selectedBody.Velocity.X +
+
+        selectedBody.Velocity.Y *
+        selectedBody.Velocity.Y +
+
+        selectedBody.Velocity.Z *
+        selectedBody.Velocity.Z);
+
+        var status =
+    currentSpeed >= escapeVelocity
+        ? "ESCAPING"
+        : "BOUND";
+
+        DrawText(
+    $"Orbit Status: {status}",
+    20,
+    380,
+    20,
+    status == "ESCAPING"
+        ? Color.Red
+        : Color.Green);
 
     }
 }
