@@ -8,8 +8,12 @@ using Raylib_cs;
 using static Raylib_cs.Raylib;
 
 
+IIntegrator integrator =
+    new SemiImplicitEulerIntegrator();
+
 IPhysicsModel physics =
-    new NewtonianPhysicsModel();
+    new NewtonianPhysicsModel(
+        integrator);
 
 var state =
     new SimulationState();
