@@ -8,5 +8,7 @@ namespace Cosmos.Desktop
     double Distance,
     double Speed,
     double Acceleration,
-    double Eccentricity);
+    double Eccentricity,
+    double Periapsis,
+    double Apoapsis);
 }

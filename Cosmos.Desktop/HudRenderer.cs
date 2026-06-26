@@ -7,9 +7,9 @@ namespace Cosmos.Desktop;
 
 public sealed class HudRenderer
 {
-
-    private readonly OrbitalStatisticsCalculator
-    _statistics = new();
+    private readonly OrbitalEnergyCalculator
+    _energyCalculator =
+        new();
 
     public void Render(
         Universe universe,
@@ -17,6 +17,9 @@ public sealed class HudRenderer
         int simulationSpeed,
         OrbitalTracker orbitalTracker)
     {
+
+        var _statistics = new OrbitalStatisticsCalculator(orbitalTracker);
+
         DrawRectangle(
             10,
             10,
@@ -43,28 +46,28 @@ public sealed class HudRenderer
             return;
         }
 
-        var body =
+        var selectedBody =
             camera.Target;
 
         var stats =
-            _statistics.Calculate(body);
+            _statistics.Calculate(selectedBody);
 
         DrawText(
-            $"Target: {body.Name}",
+            $"Target: {selectedBody.Name}",
             20,
             50,
             20,
             Color.Gold);
 
         DrawText(
-            $"Type: {body.Type}",
+            $"Type: {selectedBody.Type}",
             20,
             75,
             20,
             Color.White);
 
         DrawText(
-            $"Mass: {body.Mass.Value:F2}",
+            $"Mass: {selectedBody.Mass.Value:F2}",
             20,
             100,
             20,
@@ -97,26 +100,57 @@ public sealed class HudRenderer
             20,
             Color.White);
 
-        DrawText(
-            $"Eccentricity: {stats.Eccentricity:F3}",
-            20,
-            205,
-            20,
-            Color.Lime);
 
-        DrawText(
-    $"Periapsis: {orbitalTracker.GetPeriapsis(body):0.00}",
-    20,
-    220,
-    20,
-    Color.White);
+        if (selectedBody is not null)
+        {
+            DrawText(
+                $"Periapsis: {orbitalTracker.GetPeriapsis(selectedBody):F2}",
+                20,
+                205,
+                20,
+                Color.LightGray);
 
-        DrawText(
-            $"Apoapsis: {orbitalTracker.GetApoapsis(body):0.00}",
-            20,
-            235,
-            20,
-            Color.White);
+            DrawText(
+                $"Apoapsis: {orbitalTracker.GetApoapsis(selectedBody):F2}",
+                20,
+                220,
+                20,
+                Color.LightGray);
+        }
+
+        var sun =
+            universe.FindBody("Sun");
+
+        if (selectedBody is not null &&
+            selectedBody != sun)
+        {
+            var energy =
+                _energyCalculator.Calculate(
+                    selectedBody,
+                    sun);
+
+            DrawText(
+                $"KE: {energy.Kinetic:F0}",
+                20,
+                260,
+                20,
+                Color.SkyBlue);
+
+            DrawText(
+                $"PE: {energy.Potential:F0}",
+                20,
+                290,
+                20,
+                Color.Orange);
+
+            DrawText(
+                $"Total: {energy.Total:F0}",
+                20,
+                320,
+                20,
+                Color.Green);
+        }
+
     }
 }
 
