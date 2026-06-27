@@ -8,6 +8,7 @@ using Cosmos.Domain.Structs;
 using Cosmos.Domain.ValueObjects;
 using Cosmos.Engine.Contracts;
 using Cosmos.Engine.Integrators;
+using Cosmos.Engine.Maneuvers;
 using Cosmos.Engine.Services;
 using Cosmos.Engine.Tracking;
 using Raylib_cs;
@@ -65,7 +66,6 @@ universe
     .FindBody("Sun");
 
 state.Camera.Target = sun;
-
 
 
 while (!WindowShouldClose())

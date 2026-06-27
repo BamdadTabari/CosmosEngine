@@ -1,4 +1,34 @@
 <Solution>
+  <Folder Name="/Docs/" />
+  <Folder Name="/Docs/Architecture/">
+    <File Path="DesktopLayer.md" />
+    <File Path="DomainLayer.md" />
+    <File Path="EngineLayer.md" />
+    <File Path="ProjectStructure.md" />
+  </Folder>
+  <Folder Name="/Docs/OrbitalMechanics/">
+    <File Path="CircularOrbit.md" />
+    <File Path="EllipticalOrbit.md" />
+    <File Path="EscapeVelocity.md" />
+    <File Path="HohmannTransfer.md" />
+    <File Path="KeplerLaws.md" />
+  </Folder>
+  <Folder Name="/Docs/Physics/">
+    <File Path="Gravity.md" />
+    <File Path="NewtonLaws.md" />
+    <File Path="StandardGravitationalParameter.md" />
+    <File Path="UnitsAndDimensions.md" />
+  </Folder>
+  <Folder Name="/Docs/Research/">
+    <File Path="LagrangePoints.md" />
+    <File Path="LambertProblem.md" />
+    <File Path="NBodySimulation.md" />
+  </Folder>
+  <Folder Name="/Docs/Roadmap/">
+    <File Path="CompletedMilestones.md" />
+    <File Path="CurrentRoadmap.md" />
+    <File Path="FutureIdeas.md" />
+  </Folder>
   <Folder Name="/src/">
     <Project Path="Cosmos.Desktop/Cosmos.Desktop.csproj" Id="906771a6-9e47-44e2-ba53-c2b3f470fe34" />
     <Project Path="Cosmos.Domain/Cosmos.Domain.csproj" />
