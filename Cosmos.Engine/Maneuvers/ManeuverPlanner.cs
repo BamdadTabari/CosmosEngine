@@ -1,20 +1,27 @@
-﻿using Cosmos.Domain.Entities;
+﻿using Cosmos.Engine.Calculators;
+using Cosmos.Engine.Models;
 
 namespace Cosmos.Engine.Maneuvers;
 
 public sealed class ManeuverPlanner
 {
-    public ManeuverPlan PlanCircularization(
-        Body body)
+
+    private readonly HohmannTransferCalculator
+    _hohmannCalculator = new();
+
+    public ManeuverPlan PlanTransfer(
+    double currentOrbitRadius,
+    double targetOrbitRadius)
     {
-        var speed =
-            Math.Sqrt(
-                body.Velocity.X * body.Velocity.X +
-                body.Velocity.Y * body.Velocity.Y +
-                body.Velocity.Z * body.Velocity.Z);
+        var transfer =
+            _hohmannCalculator.Calculate(
+                currentOrbitRadius,
+                targetOrbitRadius);
 
         return new ManeuverPlan(
-            speed * 0.05,
-            "Circularization Burn");
+            transfer.DeltaV1,
+            transfer.DeltaV2,
+            transfer.TotalDeltaV,
+            transfer.TransferTime);
     }
 }

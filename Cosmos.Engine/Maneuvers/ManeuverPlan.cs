@@ -1,5 +1,7 @@
-﻿namespace Cosmos.Engine.Maneuvers;
+﻿namespace Cosmos.Engine.Models;
 
 public sealed record ManeuverPlan(
-    double DeltaV,
-    string Description);
+    double DeltaV1,
+    double DeltaV2,
+    double TotalDeltaV,
+    double TransferTime);

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Cosmos.Engine.Models;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -13,5 +14,7 @@ namespace Cosmos.Desktop
         public Camera.Camera Camera { get; set; } = new();
 
         public int SelectedBodyIndex { get; set; }
+
+        public ManeuverPlan? CurrentPlan { get; set; }
     }
 }

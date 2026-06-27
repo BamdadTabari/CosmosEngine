@@ -39,11 +39,11 @@ var loader =
 
 var universe =
     loader.Load(
-        "Data/solar-system.json");
+        "DataFiles/solar-system.json");
 
 var styleConfig =
     styleLoader.Load(
-        "Data/body-styles.json");
+        "DataFiles/body-styles.json");
 
 var renderer =
     new UniverseRenderer(
@@ -96,6 +96,7 @@ while (!WindowShouldClose())
         universe,
         state.Camera,
         state.SimulationSpeed,
-        orbitalTracker);
+        orbitalTracker,
+        state);
 }
 CloseWindow();

@@ -1,4 +1,5 @@
 ﻿using Cosmos.Domain.Entities;
+using Cosmos.Engine.Maneuvers;
 using Raylib_cs;
 using static Raylib_cs.Raylib;
 
@@ -19,6 +20,34 @@ public sealed class InputHandler
         HandleSimulationSpeed(state);
 
         HandlePause(state);
+
+        TransferPlanet(state);
+    }
+
+    private void TransferPlanet(SimulationState state)
+    {
+        if (IsKeyPressed(
+        KeyboardKey.H))
+        {
+            var currentRadius =
+    state.Camera.Target.Position
+        .Magnitude();
+
+            var targetRadius =
+    currentRadius * 1.5;
+
+            var planner =
+    new ManeuverPlanner();
+
+            var plan =
+    planner.PlanTransfer(
+        currentRadius,
+        targetRadius);
+
+            state
+    .CurrentPlan =
+        plan;
+        }
     }
 
     private void HandleCameraTarget(

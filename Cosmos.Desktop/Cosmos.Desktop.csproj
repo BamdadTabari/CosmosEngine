@@ -8,15 +8,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="DataFiles\body-styles.json" />
+    <None Remove="DataFiles\solar-system.json" />
     <None Remove="Data\body-styles.json" />
     <None Remove="Data\solar-system.json" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Data\body-styles.json">
+    <Content Include="DataFiles\body-styles.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Data\solar-system.json">
+    <Content Include="DataFiles\solar-system.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

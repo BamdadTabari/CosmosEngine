@@ -22,7 +22,8 @@ public sealed class HudRenderer
         Universe universe,
         Camera.Camera camera,
         int simulationSpeed,
-        OrbitalTracker orbitalTracker)
+        OrbitalTracker orbitalTracker,
+        SimulationState state)
     {
 
         var _statistics = new OrbitalStatisticsCalculator(orbitalTracker);
@@ -218,6 +219,45 @@ public sealed class HudRenderer
             420,
             20,
             Color.Green);
+
+
+        if (state.CurrentPlan is not null)
+        {
+            DrawText(
+                "Transfer Plan",
+                20,
+                440,
+                20,
+                Color.Orange);
+
+            DrawText(
+                $"ΔV1: {state.CurrentPlan.DeltaV1:F2}",
+                20,
+                460,
+                20,
+                Color.White);
+
+            DrawText(
+                $"ΔV2: {state.CurrentPlan.DeltaV2:F2}",
+                20,
+                480,
+                20,
+                Color.White);
+
+            DrawText(
+                $"Total ΔV: {state.CurrentPlan.TotalDeltaV:F2}",
+                20,
+                500,
+                20,
+                Color.Yellow);
+
+            DrawText(
+                $"Transfer Time: {state.CurrentPlan.TransferTime:F2}",
+                20,
+                540,
+                20,
+                Color.SkyBlue);
+        }
     }
 }
 

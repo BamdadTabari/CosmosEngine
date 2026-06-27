@@ -65,4 +65,19 @@ public sealed record Vector3D(
             dy * dy +
             dz * dz);
     }
+
+
+    public double Magnitude()
+    {
+
+        return Math.Sqrt(
+           X *
+           X +
+
+           Y *
+           Y +
+
+           Z *
+           Z);
+    }
 }
