@@ -192,6 +192,29 @@ public sealed class HudRenderer
         ? Color.Red
         : Color.Green);
 
+        var soiCalculator =
+    new SphereOfInfluenceStatisticsCalculator();
+
+        var soi =
+            soiCalculator.Calculate(
+                selectedBody,
+                sun);
+
+        DrawText(
+    $"SOI Radius: {soi.SphereOfInfluenceRadius:F2}",
+    20,
+    400,
+    20,
+    Color.SkyBlue);
+
+        
+
+        DrawText(
+            $"Inside SOI: {soi.InsideSphereOfInfluence}",
+            20,
+            420,
+            20,
+            Color.Green);
     }
 }
 

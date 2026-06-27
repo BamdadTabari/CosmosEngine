@@ -52,4 +52,17 @@ public sealed record Vector3D(
             a.Y * scalar,
             a.Z * scalar);
     }
+
+    public double DistanceTo(
+    Vector3D other)
+    {
+        var dx = X - other.X;
+        var dy = Y - other.Y;
+        var dz = Z - other.Z;
+
+        return Math.Sqrt(
+            dx * dx +
+            dy * dy +
+            dz * dz);
+    }
 }
