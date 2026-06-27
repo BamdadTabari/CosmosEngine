@@ -3,7 +3,7 @@ using Cosmos.Domain.Entities;
 using Cosmos.Domain.Enums;
 using Raylib_cs;
 
-namespace Cosmos.Desktop;
+namespace Cosmos.Desktop.Styles;
 
 public sealed class PlanetStyleProvider
 {

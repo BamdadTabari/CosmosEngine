@@ -1,9 +1,12 @@
 ﻿using Cosmos.Domain.Entities;
+using Cosmos.Engine.Calculators;
+using Cosmos.Engine.Tracking;
 using Raylib_cs;
 using System.Diagnostics;
+using Cosmos.Desktop.Camera;
 using static Raylib_cs.Raylib;
 
-namespace Cosmos.Desktop;
+namespace Cosmos.Desktop.Rendering;
 
 public sealed class HudRenderer
 {
@@ -17,7 +20,7 @@ public sealed class HudRenderer
 
     public void Render(
         Universe universe,
-        Camera camera,
+        Camera.Camera camera,
         int simulationSpeed,
         OrbitalTracker orbitalTracker)
     {

@@ -1,6 +1,8 @@
 ﻿using Cosmos.Domain.Entities;
+using Cosmos.Engine.Models;
+using Cosmos.Engine.Tracking;
 
-namespace Cosmos.Desktop;
+namespace Cosmos.Engine.Calculators;
 
 public sealed class OrbitalStatisticsCalculator
 {

@@ -5,7 +5,7 @@ using Cosmos.Domain.Structs;
 using Cosmos.Domain.ValueObjects;
 using System.Text.Json;
 
-namespace Cosmos.Desktop;
+namespace Cosmos.Desktop.Loaders;
 
 public sealed class StyleLoader
 {

@@ -1,6 +1,6 @@
 ﻿using Cosmos.Domain.Entities;
 
-namespace Cosmos.Desktop;
+namespace Cosmos.Desktop.Camera;
 
 public sealed class Camera
 {

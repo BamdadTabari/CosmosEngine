@@ -2,7 +2,7 @@
 using Raylib_cs;
 using static Raylib_cs.Raylib;
 
-namespace Cosmos.Desktop;
+namespace Cosmos.Desktop.Input;
 
 public sealed class InputHandler
 {

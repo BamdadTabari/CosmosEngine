@@ -1,6 +1,6 @@
 ﻿using Cosmos.Domain.Entities;
 
-namespace Cosmos.Desktop;
+namespace Cosmos.Engine.Tracking;
 
 public sealed class OrbitalTracker
 {

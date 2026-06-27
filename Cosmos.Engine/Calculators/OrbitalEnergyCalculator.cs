@@ -1,6 +1,7 @@
 ﻿using Cosmos.Domain.Entities;
+using Cosmos.Engine.Models;
 
-namespace Cosmos.Desktop;
+namespace Cosmos.Engine.Calculators;
 
 public sealed class OrbitalEnergyCalculator
 {

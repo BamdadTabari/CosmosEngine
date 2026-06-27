@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Cosmos.Desktop.Dtos
+namespace Cosmos.Engine.Models
 {
     public sealed record OrbitalInfluenceStatistics(
     string ParentBody,

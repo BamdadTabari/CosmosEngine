@@ -1,4 +1,6 @@
-﻿using Cosmos.Desktop;
+﻿using Cosmos.Desktop.Camera;
+using Cosmos.Desktop.Rendering;
+using Cosmos.Desktop.Styles;
 using Cosmos.Domain.Entities;
 using Cosmos.Domain.Enums;
 using Cosmos.Domain.Structs;
