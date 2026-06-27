@@ -7,6 +7,11 @@ namespace Cosmos.Desktop.Input;
 
 public sealed class InputHandler
 {
+
+    private readonly ManeuverExecutor
+    _maneuverExecutor =
+        new();
+
     public void Handle(
     SimulationState state,
     Universe universe)
@@ -24,31 +29,53 @@ public sealed class InputHandler
         TransferPlanet(state);
     }
 
-    private void TransferPlanet(SimulationState state)
+    private void TransferPlanet(
+     SimulationState state)
     {
-        if (IsKeyPressed(
-        KeyboardKey.H))
+        if (!IsKeyPressed(
+            KeyboardKey.H))
         {
-            var currentRadius =
-    state.Camera.Target.Position
-        .Magnitude();
-
-            var targetRadius =
-    currentRadius * 1.5;
-
-            var planner =
-    new ManeuverPlanner();
-
-            var plan =
-    planner.PlanTransfer(
-        currentRadius,
-        targetRadius);
-
-            state
-    .CurrentPlan =
-        plan;
+            return;
         }
+
+        var target =
+            state.Camera.Target;
+
+        if (target is null)
+        {
+            return;
+        }
+
+        var currentRadius =
+            target.Position
+                .Magnitude();
+
+        var targetRadius =
+            currentRadius * 1.5;
+
+        var planner =
+            new ManeuverPlanner();
+
+        var plan =
+            planner.PlanTransfer(
+                currentRadius,
+                targetRadius);
+
+        state.CurrentPlan =
+            plan;
+
+        state.BurnTarget =
+            target;
+
+        _maneuverExecutor
+            .ExecuteFirstBurn(
+                target,
+                plan);
+
+        state.BurnExecuted =
+            true;
     }
+
 
     private void HandleCameraTarget(
     SimulationState state,

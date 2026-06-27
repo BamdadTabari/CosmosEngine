@@ -1,4 +1,4 @@
-﻿namespace Cosmos.Engine.Models;
+﻿namespace Cosmos.Engine.Maneuvers;
 
 public sealed record ManeuverPlan(
     double DeltaV1,
