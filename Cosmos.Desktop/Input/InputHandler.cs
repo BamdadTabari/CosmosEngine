@@ -66,11 +66,10 @@ public sealed class InputHandler
 
         state.BurnTarget =
             target;
-
-        _maneuverExecutor
-            .ExecuteFirstBurn(
-                target,
-                plan);
+        state.CurrentPlan = plan;
+        state.BurnTarget = target;
+        state.BurnStep = 0;
+        state.BurnTimer = 0;
 
         state.BurnExecuted =
             true;

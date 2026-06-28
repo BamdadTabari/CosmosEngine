@@ -37,6 +37,9 @@ var styleLoader =
 var loader =
     new UniverseLoader();
 
+var executionSystem =
+    new ManeuverExecutionSystem();
+
 var universe =
     loader.Load(
         "DataFiles/solar-system.json");
@@ -74,16 +77,25 @@ while (!WindowShouldClose())
         state,
         universe);
 
+
     if (!state.Paused)
     {
+        var burnTarget = state.BurnTarget;
+
         for (int i = 0; i < state.SimulationSpeed; i++)
         {
-            physics.Step(
-                universe,
-                0.001);
+            physics.Step(universe, 0.001);
+            orbitalTracker.Update(universe.Bodies);
+        }
 
-            orbitalTracker.Update(
-                universe.Bodies);
+        if (burnTarget is not null)
+        {
+            executionSystem.Update(
+                burnTarget,
+                state.CurrentPlan,
+                0.001,
+                state.BurnStep,
+                state.BurnTimer);
         }
     }
 

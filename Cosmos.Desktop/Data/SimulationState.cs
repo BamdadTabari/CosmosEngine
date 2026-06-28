@@ -22,5 +22,8 @@ namespace Cosmos.Desktop
         public Body? BurnTarget { get; set; }
 
         public bool BurnExecuted { get; set; }
+
+        public int BurnStep { get; set; } = 0;
+        public double BurnTimer { get; set; } = 0;
     }
 }
