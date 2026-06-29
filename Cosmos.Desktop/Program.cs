@@ -90,12 +90,12 @@ while (!WindowShouldClose())
 
         if (burnTarget is not null)
         {
+
             executionSystem.Update(
-                burnTarget,
-                state.CurrentPlan,
-                0.001,
-                state.BurnStep,
-                state.BurnTimer);
+            burnTarget,
+            state.CurrentPlan,
+            0.001,
+            state.BurnState);
         }
     }
 

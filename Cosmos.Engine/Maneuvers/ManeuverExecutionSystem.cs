@@ -1,41 +1,43 @@
 using Cosmos.Domain.Entities;
 using Cosmos.Engine.Maneuvers;
+using Cosmos.Engine.Models;
+
+namespace Cosmos.Engine.Maneuvers;
 
 public sealed class ManeuverExecutionSystem
 {
     public void Update(
-        Body body,
-        ManeuverPlan? plan,
-        double dt,
-        int burnStep,
-        double burnTimer)
+    Body body,
+    ManeuverPlan? plan,
+    double dt,
+    BurnExecutionState burnState)
     {
         if (plan is null)
             return;
 
         // 🔥 Burn1
-        if (burnStep == 0)
+        if (burnState.BurnStep == 0)
         {
             ApplyBurn(body, plan.DeltaV1);
-            burnStep = 1;
+            burnState.BurnStep = 1;
         }
 
         // ⏳ wait
-        else if (burnStep == 1)
+        else if (burnState.BurnStep == 1)
         {
-            burnTimer += dt;
+            burnState.BurnTimer += dt;
 
-            if (burnTimer > plan.TransferTime * 0.5)
+            if (burnState.BurnTimer > plan.TransferTime * 0.5)
             {
-                burnStep = 2;
+                burnState.BurnStep = 2;
             }
         }
 
         // 🔥 Burn2
-        else if (burnStep == 2)
+        else if (burnState.BurnStep == 2)
         {
             ApplyBurn(body, plan.DeltaV2);
-            burnStep = 3;
+            burnState.BurnStep = 3;
         }
     }
 

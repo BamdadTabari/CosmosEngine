@@ -23,7 +23,6 @@ namespace Cosmos.Desktop
 
         public bool BurnExecuted { get; set; }
 
-        public int BurnStep { get; set; } = 0;
-        public double BurnTimer { get; set; } = 0;
+        public BurnExecutionState BurnState { get; } = new();
     }
 }

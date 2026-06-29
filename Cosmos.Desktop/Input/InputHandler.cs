@@ -68,8 +68,8 @@ public sealed class InputHandler
             target;
         state.CurrentPlan = plan;
         state.BurnTarget = target;
-        state.BurnStep = 0;
-        state.BurnTimer = 0;
+        state.BurnState.BurnStep = 0;
+        state.BurnState.BurnTimer = 0;
 
         state.BurnExecuted =
             true;
