@@ -4,7 +4,7 @@ using Cosmos.Domain.ValueObjects;
 
 namespace Cosmos.Domain.Entities
 {
-    public sealed class Body
+    public class Body
     {
         public Guid Id { get; private set; }
         public string Name { get; }

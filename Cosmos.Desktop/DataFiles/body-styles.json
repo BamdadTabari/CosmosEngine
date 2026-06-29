@@ -18,6 +18,10 @@
     "Asteroid": {
       "color": "Brown",
       "radiusMultiplier": 0.4
+    },
+    "Spacecraft": {
+      "color": "White",
+      "radiusMultiplier": 0.4
     }
   }
 }

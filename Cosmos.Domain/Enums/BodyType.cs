@@ -5,5 +5,6 @@ public enum BodyType
     Star,
     Planet,
     Moon,
-    Asteroid
+    Asteroid,
+    Spacecraft
 }

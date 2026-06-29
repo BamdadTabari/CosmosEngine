@@ -14,6 +14,10 @@ using Cosmos.Engine.Tracking;
 using Raylib_cs;
 using static Raylib_cs.Raylib;
 
+// TODO:
+// HI 
+// Im not insane
+// all of these will be refactored
 
 IIntegrator integrator =
     new SemiImplicitEulerIntegrator();
@@ -67,6 +71,24 @@ SetTargetFPS(60);
 var sun =
 universe
     .FindBody("Sun");
+
+var earth = universe.FindBody("Earth");
+
+var ship =
+    new Spacecraft(
+        earth.Position +
+        new Vector3D(
+            15,
+            0,
+            0),
+
+        earth.Velocity,
+
+        new Mass(0.01),
+
+        "Explorer-1");
+
+universe.AddBody(ship);
 
 state.Camera.Target = sun;
 
