@@ -18,261 +18,187 @@ public sealed class HudRenderer
     _escapeVelocityCalculator =
         new();
 
-    public void Render(
-        Universe universe,
-        Camera.Camera camera,
-        int simulationSpeed,
-        OrbitalTracker orbitalTracker,
-        SimulationState state)
-    {
 
-        var _statistics = new OrbitalStatisticsCalculator(orbitalTracker);
+    public void Render(
+     Universe universe,
+     Camera.Camera camera,
+     int simulationSpeed,
+     OrbitalTracker orbitalTracker,
+     SimulationState state)
+    {
+        int y = 20;
+
+        void DrawHudLine(
+            string text,
+            Color color)
+        {
+            DrawText(
+                text,
+                20,
+                y,
+                20,
+                color);
+
+            y += 22;
+        }
 
         DrawRectangle(
             10,
             10,
-            300,
-            140,
+            350,
+            650,
             new Color(0, 0, 0, 180));
 
-        // TODO
-        // yeah dude I know I knoooooooooow 
-        var fuckingMagicalNumber = 0;
-        var fuckingMagicalAddition = 20;
-
-        DrawText(
+        DrawHudLine(
             $"Bodies: {universe.Bodies.Count}",
-            20,
-            fuckingMagicalNumber + fuckingMagicalAddition,
-            20,
             Color.White);
 
         if (camera.Target is null)
         {
-            DrawText(
+            DrawHudLine(
                 "Target: None",
-                20,
-                fuckingMagicalNumber + fuckingMagicalAddition,
-                20,
                 Color.Gray);
 
             return;
         }
 
+        var statistics =
+            new OrbitalStatisticsCalculator(
+                orbitalTracker);
+
         var selectedBody =
             camera.Target;
 
         var stats =
-            _statistics.Calculate(selectedBody);
+            statistics.Calculate(
+                selectedBody);
 
-
-        DrawText(
-            $"Controlled Body: {state.ControlledBody}",
-            20,
-            fuckingMagicalNumber + fuckingMagicalAddition,
-            20,
+        DrawHudLine(
+            $"Controlled Body: {state.ControlledBody?.Name}",
             Color.Green);
 
-        DrawText(
+        DrawHudLine(
             $"Target: {selectedBody.Name}",
-            20,
-            fuckingMagicalNumber + fuckingMagicalAddition,
-            20,
             Color.Gold);
 
-        DrawText(
+        DrawHudLine(
             $"Type: {selectedBody.Type}",
-            20,
-            fuckingMagicalNumber + fuckingMagicalAddition,
-            20,
             Color.White);
 
-        DrawText(
+        DrawHudLine(
             $"Mass: {selectedBody.Mass.Value:F2}",
-            20,
-            fuckingMagicalNumber + fuckingMagicalAddition,
-            20,
             Color.White);
 
-        DrawText(
+        DrawHudLine(
             $"Velocity: {stats.Speed:F1}",
-            20,
-            fuckingMagicalNumber + fuckingMagicalAddition,
-            20,
             Color.White);
 
-        DrawText(
+        DrawHudLine(
             $"Distance: {stats.Distance:F1}",
-            20,
-            fuckingMagicalNumber + fuckingMagicalAddition,
-            20,
             Color.White);
 
-        DrawText(
+        DrawHudLine(
             $"Simulation Speed: {simulationSpeed}",
-            20,
-            fuckingMagicalNumber + fuckingMagicalAddition,
-            20,
-            Color.White);
-        DrawText(
-            $"Target Acceleration: {stats.Acceleration}",
-            20,
-            fuckingMagicalNumber + fuckingMagicalAddition,
-            20,
             Color.White);
 
+        DrawHudLine(
+            $"Acceleration: {stats.Acceleration:F2}",
+            Color.White);
 
-        if (selectedBody is not null)
-        {
-            DrawText(
-                $"Periapsis: {orbitalTracker.GetPeriapsis(selectedBody):F2}",
-                20,
-                fuckingMagicalNumber + fuckingMagicalAddition,
-                20,
-                Color.LightGray);
+        DrawHudLine(
+            $"Periapsis: {orbitalTracker.GetPeriapsis(selectedBody):F2}",
+            Color.LightGray);
 
-            DrawText(
-                $"Apoapsis: {orbitalTracker.GetApoapsis(selectedBody):F2}",
-                20,
-                fuckingMagicalNumber + fuckingMagicalAddition,
-                20,
-                Color.LightGray);
-        }
+        DrawHudLine(
+            $"Apoapsis: {orbitalTracker.GetApoapsis(selectedBody):F2}",
+            Color.LightGray);
 
         var sun =
             universe.FindBody("Sun");
 
-        if (selectedBody is not null &&
-            selectedBody != sun)
+        if (selectedBody != sun)
         {
             var energy =
                 _energyCalculator.Calculate(
                     selectedBody,
                     sun);
 
-            DrawText(
+            DrawHudLine(
                 $"KE: {energy.Kinetic:F0}",
-                20,
-                fuckingMagicalNumber + fuckingMagicalAddition,
-                20,
                 Color.SkyBlue);
 
-            DrawText(
+            DrawHudLine(
                 $"PE: {energy.Potential:F0}",
-                20,
-                fuckingMagicalNumber + fuckingMagicalAddition,
-                20,
                 Color.Orange);
 
-            DrawText(
+            DrawHudLine(
                 $"Total: {energy.Total:F0}",
-                20,
-                fuckingMagicalNumber + fuckingMagicalAddition,
-                20,
                 Color.Green);
         }
 
         var escapeVelocity =
-    _escapeVelocityCalculator.Calculate(
-        selectedBody,
-        sun);
+            _escapeVelocityCalculator.Calculate(
+                selectedBody,
+                sun);
 
-        DrawText(
+        DrawHudLine(
             $"Escape Velocity: {escapeVelocity:F2}",
-            20,
-            fuckingMagicalNumber + fuckingMagicalAddition,
-            20,
             Color.Yellow);
 
         var currentSpeed =
-    Math.Sqrt(
-        selectedBody.Velocity.X *
-        selectedBody.Velocity.X +
+            selectedBody.Velocity.Magnitude();
 
-        selectedBody.Velocity.Y *
-        selectedBody.Velocity.Y +
+        var orbitStatus =
+            currentSpeed >= escapeVelocity
+                ? "ESCAPING"
+                : "BOUND";
 
-        selectedBody.Velocity.Z *
-        selectedBody.Velocity.Z);
-
-        var status =
-    currentSpeed >= escapeVelocity
-        ? "ESCAPING"
-        : "BOUND";
-
-        DrawText(
-    $"Orbit Status: {status}",
-    20,
-    fuckingMagicalNumber + fuckingMagicalAddition,
-    20,
-    status == "ESCAPING"
-        ? Color.Red
-        : Color.Green);
+        DrawHudLine(
+            $"Orbit Status: {orbitStatus}",
+            orbitStatus == "ESCAPING"
+                ? Color.Red
+                : Color.Green);
 
         var soiCalculator =
-    new SphereOfInfluenceStatisticsCalculator();
+            new SphereOfInfluenceStatisticsCalculator();
 
         var soi =
             soiCalculator.Calculate(
                 selectedBody,
                 sun);
 
-        DrawText(
-    $"SOI Radius: {soi.SphereOfInfluenceRadius:F2}",
-    20,
-    fuckingMagicalNumber + fuckingMagicalAddition,
-    20,
-    Color.SkyBlue);
+        DrawHudLine(
+            $"SOI Radius: {soi.SphereOfInfluenceRadius:F2}",
+            Color.SkyBlue);
 
-        
-
-        DrawText(
+        DrawHudLine(
             $"Inside SOI: {soi.InsideSphereOfInfluence}",
-            20,
-            fuckingMagicalNumber + fuckingMagicalAddition,
-            20,
             Color.Green);
-
 
         if (state.CurrentPlan is not null)
         {
-            DrawText(
-                "Transfer Plan",
-                20,
-                fuckingMagicalNumber + fuckingMagicalAddition,
-                20,
+            y += 10;
+
+            DrawHudLine(
+                "TRANSFER PLAN",
                 Color.Orange);
 
-            DrawText(
+            DrawHudLine(
                 $"ΔV1: {state.CurrentPlan.DeltaV1:F2}",
-                20,
-                fuckingMagicalNumber + fuckingMagicalAddition,
-                20,
                 Color.White);
 
-            DrawText(
+            DrawHudLine(
                 $"ΔV2: {state.CurrentPlan.DeltaV2:F2}",
-                20,
-                fuckingMagicalNumber + fuckingMagicalAddition,
-                20,
                 Color.White);
 
-            DrawText(
+            DrawHudLine(
                 $"Total ΔV: {state.CurrentPlan.TotalDeltaV:F2}",
-                20,
-                fuckingMagicalNumber + fuckingMagicalAddition,
-                20,
                 Color.Yellow);
 
-            DrawText(
+            DrawHudLine(
                 $"Transfer Time: {state.CurrentPlan.TransferTime:F2}",
-                20,
-                fuckingMagicalNumber + fuckingMagicalAddition,
-                20,
                 Color.SkyBlue);
         }
-
-
     }
 }
 
