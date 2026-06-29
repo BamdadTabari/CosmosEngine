@@ -1,4 +1,5 @@
 ﻿using Cosmos.Domain.Entities;
+using Cosmos.Domain.Enums;
 using Cosmos.Engine.Maneuvers;
 using Raylib_cs;
 using static Raylib_cs.Raylib;
@@ -7,6 +8,8 @@ namespace Cosmos.Desktop.Input;
 
 public sealed class InputHandler
 {
+    private readonly ThrusterSystem
+    _thrusterSystem = new();
 
     public void Handle(
     SimulationState state,
@@ -22,21 +25,23 @@ public sealed class InputHandler
 
         HandlePause(state);
 
-        HandleManualBurn(
-    state);
+        HandleThrusters(state);
 
-        TransferPlanet(state);
+        FullScreen();
     }
 
-    private void HandleManualBurn(
+    public void FullScreen()
+    {
+        if(IsKeyPressed(KeyboardKey.One))
+            ToggleFullscreen();
+
+        if (IsKeyPressed(KeyboardKey.Two))
+            ToggleFullscreen();
+    }
+
+    private void HandleThrusters(
     SimulationState state)
     {
-        if (!IsKeyPressed(
-            KeyboardKey.B))
-        {
-            return;
-        }
-
         if (state.Camera.Target is null)
         {
             return;
@@ -45,17 +50,31 @@ public sealed class InputHandler
         var body =
             state.Camera.Target;
 
-        var velocity =
-            body.Velocity;
+        if (body.Type != BodyType.Spacecraft)
+        {
+            return;
+        }
 
-        var direction =
-            velocity.Normalize();
+        if (IsKeyPressed(
+            KeyboardKey.B))
+        {
+            _thrusterSystem.ProgradeBurn(
+                body,
+                10);
+        }
 
-        body.SetVelocity(
-            velocity +
-            direction * 20);
+        if (IsKeyPressed(
+            KeyboardKey.N))
+        {
+            _thrusterSystem.RetrogradeBurn(
+                body,
+                10);
+        }
     }
 
+    // TODO:
+    // Temporary Hohmann transfer test.
+    // Will be replaced by Mission Planner.
     private void TransferPlanet(
      SimulationState state)
     {

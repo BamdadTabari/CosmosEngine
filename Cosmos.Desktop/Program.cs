@@ -69,8 +69,6 @@ InitWindow(
     720,
     "Cosmos Engine");
 
-ToggleFullscreen();
-
 SetTargetFPS(60);
 
 
