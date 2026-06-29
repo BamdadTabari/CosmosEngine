@@ -64,7 +64,12 @@ var hudRenderer =
 Dictionary<Guid, Queue<Vector3D>>
     Trails = [];
 
-InitWindow(1280, 720, "Cosmos Engine");
+InitWindow(
+    1280,
+    720,
+    "Cosmos Engine");
+
+ToggleFullscreen();
 
 SetTargetFPS(60);
 
