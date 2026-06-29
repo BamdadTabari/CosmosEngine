@@ -27,4 +27,34 @@ public sealed class ThrusterSystem
             body.Velocity -
             direction * deltaV);
     }
+
+    public void ApplyProgradeThrust(
+    Body body,
+    double thrustAcceleration,
+    double deltaTime)
+    {
+        var direction =
+            body.Velocity.Normalize();
+
+        body.SetVelocity(
+            body.Velocity +
+            direction *
+            thrustAcceleration *
+            deltaTime);
+    }
+
+    public void ApplyRetrogradeThrust(
+        Body body,
+        double thrustAcceleration,
+        double deltaTime)
+    {
+        var direction =
+            body.Velocity.Normalize();
+
+        body.SetVelocity(
+            body.Velocity -
+            direction *
+            thrustAcceleration *
+            deltaTime);
+    }
 }

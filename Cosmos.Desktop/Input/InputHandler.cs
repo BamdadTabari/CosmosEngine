@@ -55,23 +55,30 @@ public sealed class InputHandler
             return;
         }
 
-        if (IsKeyPressed(
+        const double thrust = 50;
+
+        const double dt = 0.001;
+
+        if (IsKeyDown(
             KeyboardKey.B))
         {
-            _thrusterSystem.ProgradeBurn(
-                body,
-                10);
+            _thrusterSystem
+                .ApplyProgradeThrust(
+                    body,
+                    thrust,
+                    dt);
         }
 
-        if (IsKeyPressed(
+        if (IsKeyDown(
             KeyboardKey.N))
         {
-            _thrusterSystem.RetrogradeBurn(
-                body,
-                10);
+            _thrusterSystem
+                .ApplyRetrogradeThrust(
+                    body,
+                    thrust,
+                    dt);
         }
     }
-
     // TODO:
     // Temporary Hohmann transfer test.
     // Will be replaced by Mission Planner.
