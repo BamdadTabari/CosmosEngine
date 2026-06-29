@@ -35,10 +35,15 @@ public sealed class HudRenderer
             140,
             new Color(0, 0, 0, 180));
 
+        // TODO
+        // yeah dude I know I knoooooooooow 
+        var fuckingMagicalNumber = 0;
+        var fuckingMagicalAddition = 20;
+
         DrawText(
             $"Bodies: {universe.Bodies.Count}",
             20,
-            20,
+            fuckingMagicalNumber + fuckingMagicalAddition,
             20,
             Color.White);
 
@@ -47,7 +52,7 @@ public sealed class HudRenderer
             DrawText(
                 "Target: None",
                 20,
-                50,
+                fuckingMagicalNumber + fuckingMagicalAddition,
                 20,
                 Color.Gray);
 
@@ -60,51 +65,59 @@ public sealed class HudRenderer
         var stats =
             _statistics.Calculate(selectedBody);
 
+
+        DrawText(
+            $"Controlled Body: {state.ControlledBody}",
+            20,
+            fuckingMagicalNumber + fuckingMagicalAddition,
+            20,
+            Color.Green);
+
         DrawText(
             $"Target: {selectedBody.Name}",
             20,
-            50,
+            fuckingMagicalNumber + fuckingMagicalAddition,
             20,
             Color.Gold);
 
         DrawText(
             $"Type: {selectedBody.Type}",
             20,
-            75,
+            fuckingMagicalNumber + fuckingMagicalAddition,
             20,
             Color.White);
 
         DrawText(
             $"Mass: {selectedBody.Mass.Value:F2}",
             20,
-            100,
+            fuckingMagicalNumber + fuckingMagicalAddition,
             20,
             Color.White);
 
         DrawText(
             $"Velocity: {stats.Speed:F1}",
             20,
-            125,
+            fuckingMagicalNumber + fuckingMagicalAddition,
             20,
             Color.White);
 
         DrawText(
             $"Distance: {stats.Distance:F1}",
             20,
-            150,
+            fuckingMagicalNumber + fuckingMagicalAddition,
             20,
             Color.White);
 
         DrawText(
             $"Simulation Speed: {simulationSpeed}",
             20,
-            175,
+            fuckingMagicalNumber + fuckingMagicalAddition,
             20,
             Color.White);
         DrawText(
             $"Target Acceleration: {stats.Acceleration}",
             20,
-            190,
+            fuckingMagicalNumber + fuckingMagicalAddition,
             20,
             Color.White);
 
@@ -114,14 +127,14 @@ public sealed class HudRenderer
             DrawText(
                 $"Periapsis: {orbitalTracker.GetPeriapsis(selectedBody):F2}",
                 20,
-                205,
+                fuckingMagicalNumber + fuckingMagicalAddition,
                 20,
                 Color.LightGray);
 
             DrawText(
                 $"Apoapsis: {orbitalTracker.GetApoapsis(selectedBody):F2}",
                 20,
-                220,
+                fuckingMagicalNumber + fuckingMagicalAddition,
                 20,
                 Color.LightGray);
         }
@@ -140,21 +153,21 @@ public sealed class HudRenderer
             DrawText(
                 $"KE: {energy.Kinetic:F0}",
                 20,
-                260,
+                fuckingMagicalNumber + fuckingMagicalAddition,
                 20,
                 Color.SkyBlue);
 
             DrawText(
                 $"PE: {energy.Potential:F0}",
                 20,
-                290,
+                fuckingMagicalNumber + fuckingMagicalAddition,
                 20,
                 Color.Orange);
 
             DrawText(
                 $"Total: {energy.Total:F0}",
                 20,
-                320,
+                fuckingMagicalNumber + fuckingMagicalAddition,
                 20,
                 Color.Green);
         }
@@ -167,7 +180,7 @@ public sealed class HudRenderer
         DrawText(
             $"Escape Velocity: {escapeVelocity:F2}",
             20,
-            350,
+            fuckingMagicalNumber + fuckingMagicalAddition,
             20,
             Color.Yellow);
 
@@ -190,7 +203,7 @@ public sealed class HudRenderer
         DrawText(
     $"Orbit Status: {status}",
     20,
-    380,
+    fuckingMagicalNumber + fuckingMagicalAddition,
     20,
     status == "ESCAPING"
         ? Color.Red
@@ -207,7 +220,7 @@ public sealed class HudRenderer
         DrawText(
     $"SOI Radius: {soi.SphereOfInfluenceRadius:F2}",
     20,
-    400,
+    fuckingMagicalNumber + fuckingMagicalAddition,
     20,
     Color.SkyBlue);
 
@@ -216,7 +229,7 @@ public sealed class HudRenderer
         DrawText(
             $"Inside SOI: {soi.InsideSphereOfInfluence}",
             20,
-            420,
+            fuckingMagicalNumber + fuckingMagicalAddition,
             20,
             Color.Green);
 
@@ -226,38 +239,40 @@ public sealed class HudRenderer
             DrawText(
                 "Transfer Plan",
                 20,
-                440,
+                fuckingMagicalNumber + fuckingMagicalAddition,
                 20,
                 Color.Orange);
 
             DrawText(
                 $"ΔV1: {state.CurrentPlan.DeltaV1:F2}",
                 20,
-                460,
+                fuckingMagicalNumber + fuckingMagicalAddition,
                 20,
                 Color.White);
 
             DrawText(
                 $"ΔV2: {state.CurrentPlan.DeltaV2:F2}",
                 20,
-                480,
+                fuckingMagicalNumber + fuckingMagicalAddition,
                 20,
                 Color.White);
 
             DrawText(
                 $"Total ΔV: {state.CurrentPlan.TotalDeltaV:F2}",
                 20,
-                500,
+                fuckingMagicalNumber + fuckingMagicalAddition,
                 20,
                 Color.Yellow);
 
             DrawText(
                 $"Transfer Time: {state.CurrentPlan.TransferTime:F2}",
                 20,
-                540,
+                fuckingMagicalNumber + fuckingMagicalAddition,
                 20,
                 Color.SkyBlue);
         }
+
+
     }
 }
 

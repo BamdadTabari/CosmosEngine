@@ -119,6 +119,12 @@ universe.AddBody(ship);
 
 state.Camera.Target = sun;
 
+var explorer =
+    universe.FindBody(
+        "Explorer-1");
+
+state.ControlledBody =
+    explorer;
 
 while (!WindowShouldClose())
 {

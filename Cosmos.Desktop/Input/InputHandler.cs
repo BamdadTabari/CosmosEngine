@@ -28,6 +28,8 @@ public sealed class InputHandler
         HandleThrusters(state);
 
         FullScreen();
+
+        HandleControlledBody(state, universe);
     }
 
     public void FullScreen()
@@ -42,13 +44,13 @@ public sealed class InputHandler
     private void HandleThrusters(
     SimulationState state)
     {
-        if (state.Camera.Target is null)
+        if (state.ControlledBody is null)
         {
             return;
         }
 
         var body =
-            state.Camera.Target;
+            state.ControlledBody;
 
         if (body.Type != BodyType.Spacecraft)
         {
@@ -79,6 +81,44 @@ public sealed class InputHandler
                     dt);
         }
     }
+
+    private void HandleControlledBody(
+    SimulationState state,
+    Universe universe)
+    {
+        if (!IsKeyPressed(
+            KeyboardKey.C))
+        {
+            return;
+        }
+
+        var spacecrafts =
+            universe.Bodies
+                .Where(x =>
+                    x.Type ==
+                    BodyType.Spacecraft)
+                .ToList();
+
+        if (spacecrafts.Count == 0)
+        {
+            return;
+        }
+
+        var current =
+            spacecrafts.IndexOf(
+                state.ControlledBody!);
+
+        current++;
+
+        if (current >= spacecrafts.Count)
+        {
+            current = 0;
+        }
+
+        state.ControlledBody =
+            spacecrafts[current];
+    }
+
     // TODO:
     // Temporary Hohmann transfer test.
     // Will be replaced by Mission Planner.
