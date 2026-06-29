@@ -8,10 +8,6 @@ namespace Cosmos.Desktop.Input;
 public sealed class InputHandler
 {
 
-    private readonly ManeuverExecutor
-    _maneuverExecutor =
-        new();
-
     public void Handle(
     SimulationState state,
     Universe universe)
@@ -26,7 +22,38 @@ public sealed class InputHandler
 
         HandlePause(state);
 
+        HandleManualBurn(
+    state);
+
         TransferPlanet(state);
+    }
+
+    private void HandleManualBurn(
+    SimulationState state)
+    {
+        if (!IsKeyPressed(
+            KeyboardKey.B))
+        {
+            return;
+        }
+
+        if (state.Camera.Target is null)
+        {
+            return;
+        }
+
+        var body =
+            state.Camera.Target;
+
+        var velocity =
+            body.Velocity;
+
+        var direction =
+            velocity.Normalize();
+
+        body.SetVelocity(
+            velocity +
+            direction * 20);
     }
 
     private void TransferPlanet(

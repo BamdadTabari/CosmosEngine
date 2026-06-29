@@ -102,6 +102,19 @@ public sealed class UniverseRenderer
             return;
         }
 
+        // dumb and dumber 
+        if (body.Type == BodyType.Spacecraft)
+        {
+            DrawCube(
+                position,
+                10,
+                10,
+                10,
+                Color.Red);
+
+            return;
+        }
+
         DrawSphere(
             position,
             radius,

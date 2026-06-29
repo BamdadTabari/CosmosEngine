@@ -6,6 +6,7 @@ using Cosmos.Desktop.Styles;
 using Cosmos.Domain.Entities;
 using Cosmos.Domain.Structs;
 using Cosmos.Domain.ValueObjects;
+using Cosmos.Engine.Calculators;
 using Cosmos.Engine.Contracts;
 using Cosmos.Engine.Integrators;
 using Cosmos.Engine.Maneuvers;
@@ -74,15 +75,38 @@ universe
 
 var earth = universe.FindBody("Earth");
 
+var orbitCalculator =
+    new CircularOrbitCalculator();
+
+var shipPosition =
+    earth.Position +
+    new Vector3D(
+        15,
+        0,
+        0);
+
+var radius =
+    shipPosition.Magnitude();
+
+var mu =
+    sun.Mass.Value * 100;
+
+var orbitalVelocity =
+    orbitCalculator.CalculateVelocity(
+        mu,
+        radius);
+var tangent =
+    new Vector3D(
+        0,
+        1,
+        0);
+
 var ship =
     new Spacecraft(
-        earth.Position +
-        new Vector3D(
-            15,
-            0,
-            0),
+        shipPosition,
 
-        earth.Velocity,
+        tangent *
+        orbitalVelocity,
 
         new Mass(0.01),
 
