@@ -10,30 +10,23 @@ public sealed class CircularOrbitCalculator
         Body body,
         Body centralBody)
     {
-        var dx =
-            body.Position.X -
-            centralBody.Position.X;
-
-        var dy =
-            body.Position.Y -
-            centralBody.Position.Y;
-
-        var dz =
-            body.Position.Z -
-            centralBody.Position.Z;
-
         var radius =
-            Math.Sqrt(
-                dx * dx +
-                dy * dy +
-                dz * dz);
+            (body.Position - centralBody.Position)
+            .Magnitude();
 
+        return Calculate(
+            centralBody.Mass.Value,
+            radius);
+    }
+
+    public double Calculate(
+        double centralMass,
+        double radius)
+    {
         var mu =
-            G *
-            centralBody.Mass.Value;
+            G * centralMass;
 
         return Math.Sqrt(
-            mu /
-            radius);
+            mu / radius);
     }
 }

@@ -89,15 +89,14 @@ var shipPosition =
         0);
 
 var radius =
-    shipPosition.Magnitude();
-
-var mu =
-    sun.Mass.Value * 100;
+    (shipPosition - sun.Position)
+    .Magnitude();
 
 var orbitalVelocity =
-    orbitCalculator.CalculateVelocity(
-        mu,
+    orbitCalculator.Calculate(
+        sun.Mass.Value,
         radius);
+
 var tangent =
     new Vector3D(
         0,
