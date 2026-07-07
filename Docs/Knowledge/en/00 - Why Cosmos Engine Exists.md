@@ -126,3 +126,14 @@ It is a lifelong journey toward understanding the universe through simulation, b
 Next Chapter:
 
 Chapter 01 — What Is a Simulation?
+
+
+-----------------------
+Document Version: 1.0
+
+Last Updated:  2026/07/07
+
+Status: Stable
+
+Reviewed: ✅
+-----------------------

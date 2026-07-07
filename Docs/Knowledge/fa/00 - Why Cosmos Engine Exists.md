@@ -127,3 +127,14 @@ Cosmos Engine فقط یک پروژه‌ی نرم‌افزاری نیست.
 فصل بعد:
 
 Chapter 01 — What Is a Simulation?
+
+
+-----------------------
+Document Version: 1.0
+
+Last Updated:  2026/07/07
+
+Status: Stable
+
+Reviewed: ✅
+-----------------------
