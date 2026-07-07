@@ -119,6 +119,9 @@ Every model simplifies reality in order to answer specific questions.
 
 Cosmos Engine itself is a collection of interacting scientific models.
 
+
+A model is not judged by how much reality it contains, but by how well it answers the question it was created for.
+
 ---
 
 ## Further Reading
