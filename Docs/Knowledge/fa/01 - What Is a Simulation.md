@@ -113,7 +113,7 @@ Cosmos Engine یک موتور شبیه‌سازی فیزیکی است.
 
 ## Further Reading
 
-Chapter 02 — What Is Physics?
+Chapter 02 — What Is a Model?
 
 ---
 

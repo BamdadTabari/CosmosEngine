@@ -112,7 +112,7 @@ Cosmos Engine begins by modeling our current understanding of physics and later 
 
 ## Further Reading
 
-Chapter 02 — What Is Physics?
+Chapter 02 — What Is a Model?
 
 ---
 
