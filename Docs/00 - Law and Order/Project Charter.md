@@ -153,28 +153,6 @@ Contains rendering, input, camera, loaders and presentation.
 
 ---
 
-# Current Learning Progress
-
-Completed chapters:
-
-00 — Why Cosmos Engine Exists
-
-01 — What Is a Simulation
-
-02 — What Is a Model
-
-03 — What Is Physics
-
-04 — SI Units
-
-05 — Physical Quantities
-
-Current chapter:
-
-06 — Scalars
-
----
-
 # Long-Term Vision
 
 The project evolves through multiple stages:
@@ -213,4 +191,4 @@ Version: 1.0
 
 Status: Active
 
-Last Updated: YYYY-MM-DD
+Last Updated: 2026-07-10
