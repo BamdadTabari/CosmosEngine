@@ -1,5 +1,8 @@
 # Cosmos Engine 🚀
 
+<img width="1281" height="718" alt="asad" src="https://github.com/user-attachments/assets/e666bb4b-2f72-4da0-931d-6067666da88e" />
+
+
 Cosmos Engine is a personal project focused on learning and implementing orbital mechanics, gravity simulation, and space mission planning using C# and .NET.
 
 The long-term goal is to evolve from a simple gravity simulator into a visualization and mission-planning platform capable of demonstrating real-world orbital mechanics concepts.
