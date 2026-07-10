@@ -127,6 +127,63 @@ Examples include:
 - Total system energy
 
 By contrast, quantities such as position, velocity, and acceleration are vectors and will be introduced in the next chapter.
+---
+
+# Common Misconceptions
+
+### 1. A negative number means the quantity is a vector.
+
+Incorrect.
+
+A negative value does not imply direction.
+
+For example:
+
+- A temperature of -10°C is still a scalar.
+- An elevation of -50 meters relative to a reference level is also a scalar.
+
+The negative sign simply indicates a value relative to a chosen reference, not a direction.
+
+---
+
+### 2. Every quantity with a unit is a scalar.
+
+Incorrect.
+
+Having a unit does not make a quantity a scalar.
+
+For example:
+
+- Velocity has the unit m/s but is a vector.
+- Acceleration also has a unit but is a vector.
+
+The defining property is whether the quantity includes direction.
+
+---
+
+### 3. Every number in physics is a scalar.
+
+Incorrect.
+
+A number by itself is only a numerical value.
+
+Whether a physical quantity is a scalar or a vector depends on its physical definition, not merely on being represented by a number.
+
+---
+
+### 4. Scalars are simple and therefore unimportant.
+
+Incorrect.
+
+Many of the most fundamental quantities in physics are scalars, including:
+
+- Mass
+- Energy
+- Temperature
+- Time
+- Electric charge
+
+Without these quantities, describing physical phenomena would be impossible.
 
 ---
 
