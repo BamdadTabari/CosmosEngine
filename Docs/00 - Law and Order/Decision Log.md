@@ -77,3 +77,18 @@ The long-term vision is to explore not only known physical laws but also alterna
 ### Impact
 
 Future architecture should remain flexible enough to support multiple physics models.
+
+## 2026-07-10
+
+### Decision
+
+Add new part to chapters structure called "Common Misconceptions"
+
+### Reason
+
+Every knowledge based documentation comes with misconceptions.
+and a good document must take care of that.
+
+### Impact
+
+More Clear and more Understandable Docs. 
