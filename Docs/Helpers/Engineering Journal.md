@@ -139,6 +139,354 @@ Implementation validates knowledge.
 
 ---
 
+# Observations
+
+
+Observation-001
+
+Position has no explicit Reference Frame.
+
+Scientific Impact
+
+Position is meaningful only relative to a reference frame.
+
+Decision
+
+Pending
+
+
+Observation-002
+
+Acceleration is currently modeled as a Body property.
+
+Scientific Observation
+
+Acceleration is not an intrinsic property of a body.
+
+Decision
+
+Pending
+
+
+O-003
+
+Title:
+Premature Domain Concepts
+
+Description:
+Several domain concepts such as ReferenceFrame,
+ReferenceContext and Navigation were introduced before
+their underlying scientific concepts were fully studied.
+
+Status:
+Pending
+
+Action:
+Revisit after completing Mechanics and Kinematics chapters.
+
+
+🟡 Observation O-004
+
+Title
+
+Acceleration is represented as Vector3D.
+
+Description
+
+Current implementation treats acceleration as a mathematical vector rather than an explicit physical quantity.
+
+Status
+
+Pending
+
+Action
+
+Revisit after the Mechanics chapter.
+
+
+❓ Question Q-001
+
+Who owns force accumulation?
+
+PhysicsModel?
+Integrator?
+Another component?
+
+Review after PhysicsModel.
+
+
+🟡 Observation O-005
+
+Title
+
+PhysicsModel mutates Universe in-place.
+
+Status
+
+Pending
+
+Action
+
+Review after Services layer to confirm if mutable state is the intended architecture.
+
+
+
+🟡 O-006
+
+Title
+
+BurnStep is represented as int.
+
+Status
+
+Pending
+
+Action
+
+Review after Maneuver chapter.
+
+
+
+🟡 O-007
+
+Title
+
+EnergyStatistics has implicit units.
+
+Status
+
+Pending
+
+Action
+
+Review during Physical Quantities / Unit System.
+
+
+
+🟡 O-008
+
+Title
+
+ParentBody is stored as string.
+
+Status
+
+Pending
+
+Action
+
+Review after Navigation architecture.
+
+
+🟡 O-009
+
+Title
+
+Engine Models are primarily runtime snapshots and execution state rather than domain objects.
+
+Status
+
+Confirmed as architectural pattern (needs validation after reviewing remaining Engine models).
+
+
+
+
+Observation بزرگ O-010
+
+تا قبل از دیدن این پوشه، فکر می‌کردم Calculators یک پوشه است.
+
+الان می‌گم:
+
+نه.
+
+این پوشه در واقع چهار فصل مختلف را قاطی کرده.
+
+یعنی از نظر مفهوم، این‌ها کنار هم نیستند.
+
+من اینطوری فصل‌بندی‌شون می‌کنم:
+
+Chapter 3
+
+3.1 Fundamental Physics
+
+    CircularOrbitCalculator
+
+    EscapeVelocityCalculator
+
+    OrbitalEnergyCalculator
+
+↓
+
+3.2 Orbital Mechanics
+
+    HohmannTransferCalculator
+
+↓
+
+3.3 Orbital Analysis
+
+    OrbitalStatisticsCalculator
+
+↓
+
+3.4 Sphere of Influence
+
+    SphereOfInfluenceCalculator
+
+    SphereOfInfluenceStatisticsCalculator
+
+یعنی اگر کتاب بود، من اصلاً این هفت فایل را پشت سر هم نمی‌گذاشتم.
+
+یه Observation دیگه
+
+تقریباً همه فایل‌ها دارند یک کار انجام می‌دهند.
+
+Input
+
+↓
+
+Math
+
+↓
+
+Output
+
+هیچ State ندارند.
+
+هیچ Cache ندارند.
+
+هیچ Dependency عجیبی ندارند.
+
+یعنی واقعاً Calculator هستند.
+
+این خیلی خوبه.
+
+✅ Confirmed
+
+ولی...
+
+یه چیزی اینجا داد زد.
+
+G
+private const double G = 100;
+
+اینجا هست.
+
+بعد
+
+اینجا هم هست.
+
+private const double G = 100;
+
+بعد
+
+اینجا
+
+private const double Mu = 10_000_000;
+
+😂😂
+
+اینجا یه داستان خوابیده.
+
+این مشکل الان نیست.
+
+ولی قطعاً باید ثبت بشه.
+
+چون
+
+الان
+
+سه مفهوم مختلف داریم:
+
+G
+
+μ
+
+Mass
+
+که هنوز Relationshipشان مشخص نشده.
+
+از دید فیزیک
+
+μ = GM
+
+یعنی
+
+μ
+
+یک Constant جهانی نیست.
+
+وابسته به جرم جسم مرکزی است.
+
+در حالی که اینجا
+
+const double Mu
+
+داریم.
+
+این احتمالاً فقط برای Demo بوده.
+
+ولی باید بعداً برگردیم.
+
+
+🟡 O-011
+
+Title
+
+Physical constants are duplicated and partially hardcoded.
+
+Description
+
+G and μ appear as local constants in multiple calculators. Their physical relationship has not yet been unified.
+
+Status
+
+Pending
+
+Action
+
+Review after Unit System and Physical Constants chapter.
+
+
+
+🟡 O-012
+
+Title
+
+Vector helper methods are used inconsistently across calculators.
+
+Status
+
+Pending
+
+Action
+
+Review after Vector chapter.
+
+
+❓ Q-002
+
+Should OrbitalStatisticsCalculator depend on OrbitalTracker, or should tracking data be provided externally?
+
+Review after Tracking chapter.
+
+🟡 O-013
+
+Title
+
+Calculator creates another calculator internally instead of receiving it as a dependency.
+
+Status
+
+Pending
+
+Action
+
+Review after Services/Composition Root.
+
+
+
+---
 Version: 1.0
 
 Last Updated: 2026-07-11
