@@ -584,8 +584,415 @@ Review after Reference Frames / Orbital Systems.
 Tracking Components maintain historical simulation state without participating in physics calculations.
 
 
+❓ Q-004
+
+Who owns the simulation update pipeline and invokes OrbitalTracker.Update()?
+
+Review after Services.
+
+
+✅ C-001
+
+Physics Model فقط مسئول قوانین فیزیک است.
+
+نه حل عددی.
+
+نه زمان.
+
+نه رندر.
+
+
+✅ C-002
+
+Engine Pipeline تقریباً تأیید شد.
+
+Universe
+
+↓
+
+PhysicsModel
+
+↓
+
+Acceleration
+
+↓
+
+Integrator
+
+↓
+
+Updated Bodies
+
+قبلاً فقط حدس زده بودیم.
+
+الان تقریباً تأیید شده.
+
+
+✅ C-003
+
+شتاب‌ها قبل از هرگونه Integration محاسبه می‌شوند.
+
+این باعث می‌شود
+
+تمام اجسام
+
+جهان اولیه را ببینند.
+
+این یک طراحی علمی صحیح است.
+
+
+🟡 O-018
+Title
+
+PhysicsModel owns temporary simulation state.
+
+Description
+Dictionary<Guid, Vector3D> accelerations
+
+داخل PhysicsModel نگهداری می‌شود.
+
+این State مربوط به Domain نیست.
+
+مربوط به Runtime Simulation است.
+
+فعلاً مشخص نیست این بهترین محل نگهداری آن است یا خیر.
+
+Status
+
+Pending
+
+
+🟡 O-019
+Title
+
+NewtonianPhysicsModel both evaluates physics and orchestrates integration.
+
+Description
+
+در حال حاضر این کلاس دو مسئولیت دارد:
+
+محاسبهٔ شتاب‌ها
+هماهنگ‌کردن Integrator
+
+از دید معماری ممکن است این نقش «هماهنگ‌کنندهٔ مرحلهٔ فیزیک» باشد، نه صرفاً «مدل فیزیکی». برای قضاوت نهایی باید ابتدا Pipeline کامل Engine و Services بررسی شود.
+
+Status
+
+Pending
+
+
+🟡 O-020
+Title
+
+Physical constant G remains locally hardcoded.
+
+این همان Observation قبلی را تقویت می‌کند.
+
+الان می‌بینیم
+
+PhysicsModel هم
+
+همان
+
+const double G = 100;
+
+را دارد.
+
+پس O-011 کاملاً معتبرتر شد.
+
+
+🟡 O-021
+Title
+
+NewtonianPhysicsModel mutates Universe indirectly through Integrator.
+
+قبلاً گفته بودیم:
+
+PhysicsModel mutates Universe
+
+الان دقیق‌ترش این است:
+
+خود PhysicsModel مستقیماً Body را تغییر نمی‌دهد.
+
+بلکه
+
+Integrator
+
+این کار را انجام می‌دهد.
+
+یعنی Mutation
+
+از داخل PhysicsModel
+
+Delegate می‌شود.
+
+این Observation نسبت به O-005 دقیق‌تر است.
+
+
+❓Q-005
+
+آیا PhysicsModel باید فقط شتاب‌ها را تولید کند،
+
+یا اجرای Integrator نیز جزو مسئولیت آن است؟
+
+فعلاً پاسخ نمی‌دهیم.
+
+بعد از دیدن Pipeline.
+
+
+❓Q-006
+
+آیا Simulation Pipeline در لایهٔ بالاتر (مثلاً SimulationService یا Engine) باید مدیریت شود و PhysicsModel صرفاً یک تابع خالص برای محاسبهٔ نیروها/شتاب‌ها باشد؟
+
+فعلاً ثبت می‌شود.
+
+
+
+VIP NOTE: به موقع ریفکتور و تصمیم گیری به یاد داشته باش که تمام فرمول های فیزیک به کار رفته شده و مفاهیم فیزیکی و عددی به کار رفته شده را به شکل کامنت در جای مناسب بزاریم
+VIP NOTE: به یاد بیار موقع کدنویسی و ریفکتور که من میخوام ثابت های فیزیک قابل تغییر باشند از داخل شبیه ساز. مثلا یه تنظیمات برای شبیه ساز بذاریم که بتونیم مثلا مقادی ری همچون G رو خودمون حین اجرا تغییر بدیم و یک دکمه ی reset هم داشته باشه
+
+✅ C-004
+
+Subsystem مستقلی برای Maneuverها شکل گرفته است.
+
+✅ C-005
+
+Planning از Execution جدا شده.
+
+این دقیقاً چیزی است که در نرم‌افزارهای واقعی Mission Design هم می‌بینیم.
+
+✅ C-006
+
+Thruster از Maneuver مستقل است.
+
+این هم طراحی خوبی است.
+
+چون بعداً می‌توانی
+
+Ion Thruster
+
+Chemical Engine
+
+RCS
+
+Nuclear
+
+را اضافه کنی.
+
+
+🟡 O-022
+Title
+
+Duplicate maneuver representations.
+
+دو رکورد داریم.
+
+HohmannTransfer
+
+و
+
+ManeuverPlan
+
+که تقریباً دقیقاً یک داده را نگه می‌دارند.
+
+Δv1
+
+Δv2
+
+TransferTime
+
+TotalDeltaV
+
+فعلاً معلوم نیست چرا هر دو وجود دارند.
+
+ممکن است بعداً یکی نتیجه‌ی محاسبه و دیگری یک Plan عمومی باشد، اما در وضعیت فعلی تقریباً هم‌پوشانی دارند.
+
+Status
+
+Pending
+
+
+🟡 O-023
+Title
+
+Planner constructs calculator internally.
+
+همان الگویی که قبلاً دیده بودیم.
+
+new HohmannTransferCalculator()
+
+داخل Planner.
+
+این همان Observation O-013 را تقویت می‌کند.
+
+
+
+🟡 O-024
+Title
+
+Execution logic assumes exactly two burns.
+
+این قسمت
+
+BurnStep 0
+
+BurnStep 1
+
+BurnStep 2
+
+BurnStep 3
+
+کاملاً Hohmann-specific است.
+
+در حالی که اسم کلاس
+
+ManeuverExecutionSystem
+
+خیلی عمومی است.
+
+یعنی اسم می‌گوید:
+
+تمام Maneuverها.
+
+کد می‌گوید:
+
+فقط Hohmann.
+
+Pending.
+
+
+🟡 O-025
+Title
+
+Transfer midpoint approximated as 50% of transfer time.
+
+TransferTime * 0.5
+
+در انتقال هوهمان ایده‌ی کلی این است که Burn دوم در رسیدن به آپوآپسیس مدار انتقال انجام شود. اگر از ابتدا TransferTime را به عنوان زمان کل مسیر انتقال (که برابر با نصف دوره‌ی مدار انتقال است) محاسبه کرده باشی، Burn دوم باید در پایان همین مدت انجام شود، نه در نصف آن.
+
+بنابراین استفاده از 0.5 این سؤال را ایجاد می‌کند که تعریف TransferTime در Calculator دقیقاً چیست. ممکن است صرفاً برای Demo بوده باشد، اما از نظر علمی نیاز به بازبینی دارد.
+
+Status
+
+Pending
+
+
+🟡 O-026
+Title
+
+ManeuverExecutionSystem computes burn direction itself.
+
+داخل
+
+ApplyBurn()
+
+خود کلاس
+
+radial
+
+↓
+
+tangent
+
+↓
+
+velocity
+
+را محاسبه می‌کند.
+
+در حالی که
+
+ThrusterSystem
+
+هم داریم.
+
+ممکن است این دو بعداً همپوشانی پیدا کنند.
+
+Pending.
+
+
+🟡 O-027
+Title
+
+Current burn direction assumes circular equatorial orbit.
+
+این قسمت
+
+var tangent =
+new Vector3D(
+-radial.Y,
+radial.X,
+0)
+
+تنها در یک حالت درست است:
+
+مدار دوبعدی
+صفحه XY
+مدار تقریباً دایره‌ای
+
+برای مدارهای سه‌بعدی یا بیضوی، جهت مماس به این سادگی به دست نمی‌آید.
+
+این احتمالاً یک ساده‌سازی آگاهانه برای نسخه‌ی فعلی است.
+
+Pending.
+
+
+
+🟡 O-028
+Title
+
+ThrusterSystem mixes impulsive burns and continuous thrust.
+
+داخل یک کلاس
+
+هم داریم
+
+ProgradeBurn()
+
+که یک Impulse آنی است،
+
+و هم
+
+ApplyProgradeThrust()
+
+که Continuous Thrust را مدل می‌کند.
+
+این دو از نظر فیزیکی دو مفهوم متفاوت هستند، هرچند هر دو به سامانهٔ پیشران مربوط‌اند.
+
+Pending.
+
+
+❓Q-007
+
+آیا ManeuverPlan قرار است یک Plan عمومی برای همهٔ انواع مانور باشد یا صرفاً نمایش دیگری از HohmannTransfer است؟
+
+❓Q-008
+
+آیا ThrusterSystem باید تنها مسئول تغییر Velocity باشد و ManeuverExecutionSystem صرفاً زمان‌بندی و ترتیب اجرای Burnها را مدیریت کند؟
+
+❓Q-009
+
+تعریف دقیق TransferTime در HohmannTransferCalculator چیست؟ آیا زمان رسیدن به Burn دوم است یا زمان کامل مسیر انتقال؟ پاسخ این سؤال تعیین می‌کند که شرط TransferTime * 0.5 از نظر علمی درست است یا خیر.
+
+
+VIP NOTE: به موقع ریفکتور و تصمیم گیری به یاد داشته باش که تمام فرمول های فیزیک به کار رفته شده و مفاهیم فیزیکی و عددی به کار رفته شده را به شکل کامنت در جای مناسب بزاریم
+VIP NOTE: به یاد بیار موقع کدنویسی و ریفکتور که من میخوام ثابت های فیزیک قابل تغییر باشند از داخل شبیه ساز. مثلا یه تنظیمات برای شبیه ساز بذاریم که بتونیم مثلا مقادی ری همچون G رو خودمون حین اجرا تغییر بدیم و یک دکمه ی reset هم داشته باشه
+
+
+VIP NOTE: به موقع ریفکتور و تصمیم گیری به یاد داشته باش که تمام فرمول های فیزیک به کار رفته شده و مفاهیم فیزیکی و عددی به کار رفته شده را به شکل کامنت در جای مناسب بزاریم
+VIP NOTE: به یاد بیار موقع کدنویسی و ریفکتور که من میخوام ثابت های فیزیک قابل تغییر باشند از داخل شبیه ساز. مثلا یه تنظیمات برای شبیه ساز بذاریم که بتونیم مثلا مقادی ری همچون G رو خودمون حین اجرا تغییر بدیم و یک دکمه ی reset هم داشته باشه
+
+
+VIP NOTE: به موقع ریفکتور و تصمیم گیری به یاد داشته باش که تمام فرمول های فیزیک به کار رفته شده و مفاهیم فیزیکی و عددی به کار رفته شده را به شکل کامنت در جای مناسب بزاریم
+VIP NOTE: به یاد بیار موقع کدنویسی و ریفکتور که من میخوام ثابت های فیزیک قابل تغییر باشند از داخل شبیه ساز. مثلا یه تنظیمات برای شبیه ساز بذاریم که بتونیم مثلا مقادی ری همچون G رو خودمون حین اجرا تغییر بدیم و یک دکمه ی reset هم داشته باشه
+
+
+VIP NOTE: به موقع ریفکتور و تصمیم گیری به یاد داشته باش که تمام فرمول های فیزیک به کار رفته شده و مفاهیم فیزیکی و عددی به کار رفته شده را به شکل کامنت در جای مناسب بزاریم
+VIP NOTE: به یاد بیار موقع کدنویسی و ریفکتور که من میخوام ثابت های فیزیک قابل تغییر باشند از داخل شبیه ساز. مثلا یه تنظیمات برای شبیه ساز بذاریم که بتونیم مثلا مقادی ری همچون G رو خودمون حین اجرا تغییر بدیم و یک دکمه ی reset هم داشته باشه
+
 
 ---
 Version: 1.0
 
-Last Updated: 2026-07-11
+Last Updated: 2026-07-14
