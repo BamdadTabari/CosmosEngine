@@ -142,6 +142,10 @@ Implementation validates knowledge.
 # Observations
 
 
+// note: remember add comment for every conceptal part of code
+// example: what is Semi-Implicit Euler?
+
+
 Observation-001
 
 Position has no explicit Reference Frame.
@@ -483,6 +487,101 @@ Pending
 Action
 
 Review after Services/Composition Root.
+
+
+
+Observation
+
+🟡 O-014
+
+Title
+
+Integrator contains simulation safety limits.
+
+Description
+
+Velocity clamping is mixed with numerical integration.
+
+Status
+
+Pending
+
+Action
+
+Review after Simulation Stability chapter.
+
+
+🟡 O-015
+
+Title
+
+Position clamping exists inside Integrator.
+
+Status
+
+Pending
+
+Action
+
+Review after World Boundary design.
+
+
+❓ Q-003
+
+Who owns the current acceleration state?
+
+PhysicsModel
+
+Integrator
+
+Body
+
+Review after PhysicsModel.
+
+
+
+🟡 O-016
+
+Title
+
+Possible Engine pipeline identified.
+
+Pipeline
+
+PhysicsModel
+
+↓
+
+Integrator
+
+↓
+
+Tracking
+
+Status
+
+Needs validation after reviewing Tracking and Services.
+
+
+
+🟡 O-017
+
+Title
+
+OrbitalTracker assumes the Sun is always the central body.
+
+Status
+
+Pending
+
+Action
+
+Review after Reference Frames / Orbital Systems.
+
+
+🟢 Architectural Pattern P-001
+
+Tracking Components maintain historical simulation state without participating in physics calculations.
 
 
 
