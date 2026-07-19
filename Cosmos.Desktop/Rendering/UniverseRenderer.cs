@@ -18,11 +18,22 @@ public sealed class UniverseRenderer
     private readonly PlanetStyleProvider
     _styleProvider;
 
+
+    private Texture2D _starsTexture;
+    private Texture2D _nebulaBlue;
+    private Texture2D _nebulaPurple;
+    private Texture2D _sky;
+
     public UniverseRenderer(
         PlanetStyleProvider styleProvider)
     {
         _styleProvider =
             styleProvider;
+        _starsTexture = LoadTexture("Assets/Sky/stars.png");
+        _nebulaBlue = LoadTexture("Assets/Sky/nebula_blue.png");
+        _nebulaPurple = LoadTexture("Assets/Sky/nebula_purple.png");
+        _sky = LoadTexture("Assets/Sky/nebula_purple.png");
+
     }
 
     public void Render(
@@ -31,9 +42,49 @@ public sealed class UniverseRenderer
         Dictionary<Guid, Queue<Vector3D>> trails)
     {
         BeginDrawing();
-        ClearBackground(Color.Black);
+        ClearBackground(new Color(2, 3, 8, 255));
 
-        DrawNebulaBackground();
+        //DrawNebulaBackground();
+
+        DrawTexturePro(
+          _sky,
+          new Rectangle(
+              0,
+              0,
+              _sky.Width,
+              _sky.Height),
+          new Rectangle(
+              0,
+              0,
+              GetScreenWidth(),
+              GetScreenHeight()),
+          Vector2.Zero,
+          0,
+          new Color(170, 170, 170, 255));
+
+
+        DrawTextureEx(
+            _nebulaBlue!,
+            new Vector2(-150, -80),
+            0,
+            1.4f,
+            new Color(255, 255, 255, 90));
+
+        DrawTextureEx(
+            _nebulaPurple!,
+                    new Vector2(900, 250),
+                    0,
+                    1.2f,
+                    new Color(255, 255, 255, 70));
+
+        DrawTextureEx(
+    _starsTexture!,
+    Vector2.Zero,
+    0,
+    1f,
+    new Color(255, 255, 255, 120));
+
+
 
         BeginMode3D(
             BuildCamera(camera));

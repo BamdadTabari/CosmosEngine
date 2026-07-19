@@ -20,6 +20,10 @@ using static Raylib_cs.Raylib;
 // Im not insane
 // all of these will be refactored
 
+const int width = 1080; //1920;
+const int height = 920; //1080;
+
+
 IIntegrator integrator =
     new SemiImplicitEulerIntegrator();
 
@@ -64,13 +68,25 @@ var hudRenderer =
 Dictionary<Guid, Queue<Vector3D>>
     Trails = [];
 
-InitWindow(
-    1280,
-    720,
-    "Cosmos Engine");
 
-SetTargetFPS(60);
+SetConfigFlags(
+    ConfigFlags.Msaa4xHint |
+    ConfigFlags.VSyncHint |
+    ConfigFlags.HighDpiWindow |
+    ConfigFlags.ResizableWindow);
 
+SetConfigFlags(ConfigFlags.FullscreenMode);
+SetConfigFlags(
+    ConfigFlags.HighDpiWindow);
+InitWindow(width, height, "Cosmos Engine");
+
+
+SetTraceLogLevel(TraceLogLevel.None);
+
+
+//SetTargetFPS(60);
+SetTargetFPS(144);
+DisableCursor();
 
 var sun =
 universe
@@ -130,6 +146,7 @@ while (!WindowShouldClose())
     inputHandler.Handle(
         state,
         universe);
+
 
 
     if (!state.Paused)

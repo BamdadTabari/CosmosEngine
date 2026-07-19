@@ -30,6 +30,7 @@ public sealed class InputHandler
         FullScreen();
 
         HandleControlledBody(state, universe);
+
     }
 
     public void FullScreen()
