@@ -31,6 +31,7 @@ public sealed class InputHandler
 
         HandleControlledBody(state, universe);
 
+        TransferPlanet(state);
     }
 
     public void FullScreen()

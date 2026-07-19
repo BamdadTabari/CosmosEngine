@@ -57,10 +57,7 @@ var styleConfig =
     styleLoader.Load(
         "DataFiles/body-styles.json");
 
-var renderer =
-    new UniverseRenderer(
-        new PlanetStyleProvider(
-            styleConfig));
+
 
 var hudRenderer =
     new HudRenderer();
@@ -80,6 +77,10 @@ SetConfigFlags(
     ConfigFlags.HighDpiWindow);
 InitWindow(width, height, "Cosmos Engine");
 
+var renderer =
+    new UniverseRenderer(
+        new PlanetStyleProvider(
+            styleConfig));
 
 SetTraceLogLevel(TraceLogLevel.None);
 

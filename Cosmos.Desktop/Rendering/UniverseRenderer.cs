@@ -32,7 +32,7 @@ public sealed class UniverseRenderer
         _starsTexture = LoadTexture("Assets/Sky/stars.png");
         _nebulaBlue = LoadTexture("Assets/Sky/nebula_blue.png");
         _nebulaPurple = LoadTexture("Assets/Sky/nebula_purple.png");
-        _sky = LoadTexture("Assets/Sky/nebula_purple.png");
+        _sky = LoadTexture("Assets/Sky/sky.png");
 
     }
 
@@ -41,18 +41,30 @@ public sealed class UniverseRenderer
         Camera camera,
         Dictionary<Guid, Queue<Vector3D>> trails)
     {
+
         BeginDrawing();
+
+        float skyOffsetX =
+            (float)(camera.AngleX * 400.0);
+
+        float skyOffsetY =
+            (float)(camera.AngleY * 120.0);
+
+
+        skyOffsetX %= _sky.Width;
+
+        skyOffsetY %= _sky.Height;
+
         ClearBackground(new Color(2, 3, 8, 255));
 
-        //DrawNebulaBackground();
 
         DrawTexturePro(
           _sky,
           new Rectangle(
-              0,
-              0,
-              _sky.Width,
-              _sky.Height),
+            skyOffsetX,
+            skyOffsetY,
+            _sky.Width,
+            _sky.Height),
           new Rectangle(
               0,
               0,
@@ -65,24 +77,30 @@ public sealed class UniverseRenderer
 
         DrawTextureEx(
             _nebulaBlue!,
-            new Vector2(-150, -80),
+            new Vector2(
+                -150 - skyOffsetX * 0.15f,
+                -80 - skyOffsetY * 0.15f),
             0,
             1.4f,
             new Color(255, 255, 255, 90));
 
         DrawTextureEx(
             _nebulaPurple!,
-                    new Vector2(900, 250),
+                    new Vector2(
+                        900 - skyOffsetX * 0.25f,
+                        250 - skyOffsetY * 0.25f),
                     0,
                     1.2f,
                     new Color(255, 255, 255, 70));
 
         DrawTextureEx(
-    _starsTexture!,
-    Vector2.Zero,
-    0,
-    1f,
-    new Color(255, 255, 255, 120));
+            _starsTexture!,
+            new Vector2(
+            -skyOffsetX * 0.05f,
+            -skyOffsetY * 0.05f),
+            0,
+            1f,
+            new Color(255, 255, 255, 120));
 
 
 

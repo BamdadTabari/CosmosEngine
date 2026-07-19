@@ -8,6 +8,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Assets\Sky\nebula_blue.png" />
+    <None Remove="Assets\Sky\nebula_purple.png" />
+    <None Remove="Assets\Sky\sky.png" />
+    <None Remove="Assets\Sky\stars.png" />
     <None Remove="DataFiles\body-styles.json" />
     <None Remove="DataFiles\solar-system.json" />
     <None Remove="Data\body-styles.json" />
@@ -15,6 +19,18 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Assets\Sky\nebula_blue.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Sky\nebula_purple.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Sky\sky.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Sky\stars.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="DataFiles\body-styles.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
