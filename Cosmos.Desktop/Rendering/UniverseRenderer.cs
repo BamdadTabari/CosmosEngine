@@ -24,6 +24,8 @@ public sealed class UniverseRenderer
     private Texture2D _nebulaPurple;
     private Texture2D _sky;
 
+    private Texture2D _sunGlow;
+
     public UniverseRenderer(
         PlanetStyleProvider styleProvider)
     {
@@ -33,6 +35,11 @@ public sealed class UniverseRenderer
         _nebulaBlue = LoadTexture("Assets/Sky/nebula_blue.png");
         _nebulaPurple = LoadTexture("Assets/Sky/nebula_purple.png");
         _sky = LoadTexture("Assets/Sky/sky.png");
+        _sunGlow = LoadTexture("Assets/Effects/sun_glow.png");
+
+        SetTextureFilter(
+                   _sunGlow,
+                   TextureFilter.Trilinear);
 
     }
 
@@ -72,7 +79,8 @@ public sealed class UniverseRenderer
               GetScreenHeight()),
           Vector2.Zero,
           0,
-          new Color(170, 170, 170, 255));
+          //new Color(170, 170, 170, 255)
+          Color.White);
 
 
         DrawTextureEx(
@@ -109,12 +117,40 @@ public sealed class UniverseRenderer
 
         foreach (var body in universe.Bodies)
         {
+            var style = _styleProvider.GetStyle(body);
+            var rad = style.Radius;
+            if (body.Type == BodyType.Star)
+            {
+                var position =
+            new Vector3(
+                (float)(body.Position.X * RenderScale),
+                (float)(body.Position.Y * RenderScale),
+                (float)(body.Position.Z * RenderScale));
+                DrawSunGlow(
+                    position,
+                    rad,
+                    camera);
+
+                DrawSphere(
+                    position,
+                     rad,
+                    new Color(255, 225, 120, 255));
+
+                break;
+            }
+        }
+
+        foreach (var body in universe.Bodies)
+        {
             UpdateTrail(
                 body,
                 trails);
 
             _trailRenderer.Render(
                 trails[body.Id]);
+
+            if (body.Type == BodyType.Star)
+                continue;
 
             DrawBody(
                 body,
@@ -123,6 +159,22 @@ public sealed class UniverseRenderer
 
         EndMode3D();
         EndDrawing();
+    }
+
+
+    private void DrawSunGlow(
+    Vector3 position,
+    float radius,
+    Camera camera)
+    {
+        var cam = BuildCamera(camera);
+
+        DrawBillboard(
+            cam,
+            _sunGlow,
+            position,
+            radius * 4.5f,
+            Color.White);
     }
 
     private void UpdateTrail(
@@ -138,7 +190,7 @@ public sealed class UniverseRenderer
         trails[body.Id]
             .Enqueue(body.Position);
 
-        while (trails[body.Id].Count > 1000)
+        while (trails[body.Id].Count > 300)
         {
             trails[body.Id]
                 .Dequeue();
@@ -161,16 +213,6 @@ public sealed class UniverseRenderer
         var radius =
             style.Radius;
 
-        if (body.Type == BodyType.Star)
-        {
-            DrawSphere(
-                position,
-                radius,
-                Color.Gold);
-
-            return;
-        }
-
         // dumb and dumber 
         if (body.Type == BodyType.Spacecraft)
         {
@@ -188,33 +230,6 @@ public sealed class UniverseRenderer
             position,
             radius,
             style.Color);
-    }
-
-    private void DrawNebulaBackground()
-    {
-        DrawCircle(
-            300,
-            200,
-            240,
-            new Color(80, 30, 120, 20));
-
-        DrawCircle(
-            420,
-            260,
-            180,
-            new Color(120, 60, 180, 15));
-
-        DrawCircle(
-            900,
-            250,
-            320,
-            new Color(30, 70, 140, 18));
-
-        DrawCircle(
-            1050,
-            320,
-            240,
-            new Color(20, 40, 100, 15));
     }
 
     private Camera3D BuildCamera(
