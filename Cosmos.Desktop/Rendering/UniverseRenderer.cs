@@ -49,7 +49,6 @@ public sealed class UniverseRenderer
         Dictionary<Guid, Queue<Vector3D>> trails)
     {
 
-        BeginDrawing();
 
         float skyOffsetX =
             (float)(camera.AngleX * 400.0);
@@ -158,7 +157,6 @@ public sealed class UniverseRenderer
         }
 
         EndMode3D();
-        EndDrawing();
     }
 
 
@@ -226,10 +224,82 @@ public sealed class UniverseRenderer
             return;
         }
 
+        float pulse =
+    1f + MathF.Sin((float)GetTime() * 0.6f) * 0.01f;
+
+        // ---------- Planet Glow ----------
+        DrawSphere(
+            position,
+            radius * 1.03f,
+            new Color(
+                (int)style.Color.R,
+                style.Color.G,
+                style.Color.B,
+                18)
+            {
+
+            });
+
+        // ---------- Planet ----------
         DrawSphere(
             position,
             radius,
             style.Color);
+
+        // ---------- Small Highlight ----------
+        DrawSphere(
+            position + new Vector3(
+                radius * 0.12f,
+                radius * 0.10f,
+                radius * 0.12f),
+            radius * 0.93f,
+            ColorAlpha(Color.White, 0.035f));
+
+        // ---------- Atmosphere ----------
+        DrawSphereWires(
+            position,
+            radius * 1.015f,
+            24,
+            24,
+            ColorAlpha(Color.White, 0.04f));
+
+        if (body.Name == "Earth")
+        {
+            DrawSphereWires(
+                position,
+                radius * 1.03f,
+                24,
+                24,
+                new Color(120, 180, 255, 25));
+        }
+
+        if (body.Name == "Saturn")
+        {
+            DrawCylinderEx(
+                position + new Vector3(-radius * 1.8f, 0, 0),
+                position + new Vector3(radius * 1.8f, 0, 0),
+                radius * 1.45f,
+                radius * 1.45f,
+                64,
+                new Color(220, 200, 140, 70));
+        }
+
+        if (body.Name == "Jupiter")
+        {
+            DrawSphere(
+                position,
+                radius * 1.01f,
+                new Color(255, 220, 170, 30));
+        }
+
+        if (body.Name == "Mars")
+        {
+            DrawSphere(
+                position,
+                radius * 1.02f,
+                new Color(255, 120, 80, 25));
+        }
+
     }
 
     private Camera3D BuildCamera(

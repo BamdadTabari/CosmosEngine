@@ -171,6 +171,8 @@ while (!WindowShouldClose())
         }
     }
 
+    BeginDrawing();
+
     renderer.Render(
         universe,
         state.Camera,
@@ -182,5 +184,9 @@ while (!WindowShouldClose())
         state.SimulationSpeed,
         orbitalTracker,
         state);
+
+    EndDrawing();
+
+
 }
 CloseWindow();
