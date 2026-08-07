@@ -15,6 +15,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Cosmos.Domain\Cosmos.Domain.csproj" />
+    <ProjectReference Include="..\Cosmos.Engine\Cosmos.Engine.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Using Include="Xunit" />
   </ItemGroup>
 
