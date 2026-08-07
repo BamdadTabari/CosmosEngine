@@ -11,6 +11,7 @@ using Cosmos.Engine.Contracts;
 using Cosmos.Engine.Integrators;
 using Cosmos.Engine.Maneuvers;
 using Cosmos.Engine.Services;
+using Cosmos.Engine.Simulation;
 using Cosmos.Engine.Tracking;
 using Raylib_cs;
 using static Raylib_cs.Raylib;
@@ -48,6 +49,13 @@ var loader =
 
 var executionSystem =
     new ManeuverExecutionSystem();
+
+var simulationRunner =
+    new SimulationRunner(
+        physics,
+        orbitalTracker,
+        executionSystem,
+        fixedDeltaTime: 0.001);
 
 var universe =
     loader.Load(
@@ -148,28 +156,21 @@ while (!WindowShouldClose())
         state,
         universe);
 
+    // Translate UI controls into simulation-clock settings.
+    simulationRunner.IsPaused =
+        state.Paused;
 
+    simulationRunner.TimeScale =
+        state.SimulationSpeed;
 
-    if (!state.Paused)
-    {
-        var burnTarget = state.BurnTarget;
-
-        for (int i = 0; i < state.SimulationSpeed; i++)
-        {
-            physics.Step(universe, 0.001);
-            orbitalTracker.Update(universe.Bodies);
-        }
-
-        if (burnTarget is not null)
-        {
-
-            executionSystem.Update(
-            burnTarget,
-            state.CurrentPlan,
-            0.001,
-            state.BurnState);
-        }
-    }
+    // Rendering reports elapsed real time;
+    // the runner converts it into deterministic simulation steps.
+    simulationRunner.Update(
+        universe,
+        GetFrameTime(),
+        state.BurnTarget,
+        state.CurrentPlan,
+        state.BurnState);
 
     BeginDrawing();
 
