@@ -14,10 +14,28 @@ public sealed class SimulationRunner
     private readonly ManeuverExecutionSystem _maneuverExecutionSystem;
 
     private double _accumulator;
+    private double _timeScale = 1;
 
     public double FixedDeltaTime { get; }
     public double SimulationTime { get; private set; }
-    public double TimeScale { get; set; } = 1;
+    public double TimeScale
+    {
+        get => _timeScale;
+
+        set
+        {
+            if (value < 0 ||
+                double.IsNaN(value) ||
+                double.IsInfinity(value))
+            {
+                throw new ArgumentOutOfRangeException(
+                    nameof(value),
+                    "TimeScale must be a finite, non-negative number.");
+            }
+
+            _timeScale = value;
+        }
+    }
     public bool IsPaused { get; set; }
 
     public SimulationRunner(
@@ -59,14 +77,6 @@ public sealed class SimulationRunner
         {
             throw new ArgumentOutOfRangeException(
                 nameof(realDeltaTime));
-        }
-
-        if (TimeScale < 0 ||
-            double.IsNaN(TimeScale) ||
-            double.IsInfinity(TimeScale))
-        {
-            throw new InvalidOperationException(
-                "TimeScale must be a finite, non-negative number.");
         }
 
 

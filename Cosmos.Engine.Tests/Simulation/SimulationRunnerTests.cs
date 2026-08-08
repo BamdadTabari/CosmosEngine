@@ -171,6 +171,30 @@ public sealed class SimulationRunnerTests
         Assert.Equal(6, runner.SimulationTime);
     }
 
+    [Theory]
+    [InlineData(-1)]
+    [InlineData(double.NaN)]
+    [InlineData(double.PositiveInfinity)]
+    public void TimeScale_WhenValueIsInvalid_ShouldThrow(
+    double invalidTimeScale)
+    {
+        // Arrange: create a valid simulation clock.
+        var runner =
+            new SimulationRunner(
+                new CountingPhysicsModel(),
+                new OrbitalTracker(),
+                new ManeuverExecutionSystem(),
+                fixedDeltaTime: 1);
+
+        // Act: attempt to place the clock in an invalid state.
+        Action setTimeScale = () =>
+            runner.TimeScale = invalidTimeScale;
+
+        // Assert: invalid time scales are rejected immediately.
+        Assert.Throws<ArgumentOutOfRangeException>(
+            setTimeScale);
+    }
+
     private sealed class CountingPhysicsModel
         : IPhysicsModel
     {
