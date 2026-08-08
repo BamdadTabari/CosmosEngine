@@ -85,6 +85,92 @@ public sealed class SimulationRunnerTests
         Assert.Equal(4, runner.SimulationTime);
     }
 
+    [Fact]
+    public void Update_WhenPaused_ShouldNotAdvanceOrAccumulateTime()
+    {
+        // Arrange: create a stopped universe with a one-unit fixed step.
+        var physicsModel =
+            new CountingPhysicsModel();
+
+        var runner =
+            new SimulationRunner(
+                physicsModel,
+                new OrbitalTracker(),
+                new ManeuverExecutionSystem(),
+                fixedDeltaTime: 1)
+            {
+                IsPaused = true
+            };
+
+        var universe =
+            new Universe();
+
+        var burnState =
+            new BurnExecutionState();
+
+        // Act: real time passes while simulation time remains frozen.
+        runner.Update(
+            universe,
+            realDeltaTime: 10,
+            burnTarget: null,
+            currentPlan: null,
+            burnState);
+
+        // Assert: neither physics nor the simulation clock may advance.
+        Assert.Equal(0, physicsModel.StepCount);
+        Assert.Equal(0, runner.SimulationTime);
+
+        // Act: resume with less than one complete simulation step.
+        runner.IsPaused = false;
+
+        runner.Update(
+            universe,
+            realDeltaTime: 0.5,
+            burnTarget: null,
+            currentPlan: null,
+            burnState);
+
+        // Assert: paused time was discarded rather than accumulated.
+        Assert.Equal(0, physicsModel.StepCount);
+        Assert.Equal(0, runner.SimulationTime);
+    }
+
+    [Fact]
+    public void Update_WhenTimeScaleIsApplied_ShouldAdvanceScaledSimulationTime()
+    {
+        // Arrange: run simulation time three times faster than real time.
+        var physicsModel =
+            new CountingPhysicsModel();
+
+        var runner =
+            new SimulationRunner(
+                physicsModel,
+                new OrbitalTracker(),
+                new ManeuverExecutionSystem(),
+                fixedDeltaTime: 1)
+            {
+                TimeScale = 3
+            };
+
+        var universe =
+            new Universe();
+
+        var burnState =
+            new BurnExecutionState();
+
+        // Act: two real seconds become six simulation seconds.
+        runner.Update(
+            universe,
+            realDeltaTime: 2,
+            burnTarget: null,
+            currentPlan: null,
+            burnState);
+
+        // Assert: time scaling changes speed, not fixed-step size.
+        Assert.Equal(6, physicsModel.StepCount);
+        Assert.Equal(6, runner.SimulationTime);
+    }
+
     private sealed class CountingPhysicsModel
         : IPhysicsModel
     {
