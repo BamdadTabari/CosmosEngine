@@ -9,6 +9,37 @@ namespace Cosmos.Engine.Services
     : IPhysicsModel
     {
 
+        // Cosmos Engine currently uses a normalized simulation-unit system,
+        // not SI units.
+        //
+        // In this unit system:
+        // - position is measured in simulation length units;
+        // - mass is measured in simulation mass units;
+        // - time is measured in simulation time units;
+        // - velocity is length unit / time unit;
+        // - acceleration is length unit / time unit².
+        //
+        // Therefore, this constant has the dimensions:
+        //
+        //     length³ / (mass × time²)
+        //
+        // Its value is calibrated to the scaled data in solar-system.json.
+        // For example, a central mass of 100,000 and an orbital radius
+        // of 150 produce a circular velocity close to Earth's value of 260.
+        private const double GravitationalConstant = 100;
+
+        // Interactions closer than 0.01 simulation length units are
+        // currently ignored:
+        //
+        //     minimum distance² = 0.01² = 0.0001
+        //
+        // This is a numerical safety guard, not a physical collision model
+        // and not gravitational softening. It creates a discontinuity:
+        // gravity is calculated immediately outside the threshold but
+        // becomes exactly zero inside it.
+        private const double MinimumInteractionDistanceSquared =
+            0.0001;
+
         private readonly IIntegrator _integrator;
 
         Dictionary<Guid, Vector3D> accelerations = [];
@@ -65,8 +96,15 @@ namespace Cosmos.Engine.Services
                 var distanceSquared =
                     offset.LengthSquared();
 
-                if (distanceSquared < 0.0001)
+                if (distanceSquared <
+                        MinimumInteractionDistanceSquared)
                 {
+                    // Ignore extremely close interactions to prevent division by
+                    // zero or an unbounded acceleration.
+                    //
+                    // This is only a temporary numerical guard. A future model
+                    // should handle close encounters explicitly through collision
+                    // handling, gravitational softening, or both.
                     continue;
                 }
 
@@ -74,12 +112,11 @@ namespace Cosmos.Engine.Services
                 var direction =
                     offset.Normalize();
 
-                const double G = 100;
 
                 // Newton's law of universal gravitation:
                 // F = G * m1 * m2 / r²
                 var force =
-                G *
+                GravitationalConstant *
                 body.Mass.Value *
                 other.Mass.Value /
                 distanceSquared;
