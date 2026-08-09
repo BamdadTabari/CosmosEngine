@@ -48,4 +48,46 @@ public sealed class SemiImplicitEulerIntegratorTests
             50_000,
             body.Velocity.Magnitude());
     }
+
+    [Fact]
+    public void Integrate_WhenPositionExceedsMaximumDistance_ShouldClampBodyToBoundary()
+    {
+        // Arrange
+        // The body starts close to the current artificial boundary
+        // and moves far enough to cross it during this timestep.
+        var body = new Body(
+            position: new Vector3D(4_990_000, 0, 0),
+            velocity: new Vector3D(20_000, 0, 0),
+            mass: new Mass(1),
+            name: "Test Body",
+            type: BodyType.Planet);
+
+        var integrator =
+            new SemiImplicitEulerIntegrator();
+
+        var acceleration =
+            new Vector3D(0, 0, 0);
+
+        const double deltaTime = 1;
+
+        // Act
+        integrator.Integrate(
+            body,
+            acceleration,
+            deltaTime);
+
+        // Assert
+        // Without the clamp, the new X position would be 5,010,000.
+        // The current implementation projects the body back onto
+        // the artificial spherical boundary at radius 5,000,000.
+        Assert.Equal(
+            5_000_000,
+            body.Position.Magnitude());
+
+        // The boundary changes position but does not alter velocity.
+        // Therefore, this is not a physical collision response.
+        Assert.Equal(
+            20_000,
+            body.Velocity.Magnitude());
+    }
 }
