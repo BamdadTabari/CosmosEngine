@@ -86,6 +86,77 @@ public sealed class NewtonianPhysicsModelTests
                 .Magnitude());
     }
 
+
+    [Fact]
+    public void Step_WhenBodiesAreOutsideMinimumDistance_ShouldProduceLargeAcceleration()
+    {
+        // Arrange
+        // The bodies are separated by 0.02 position units.
+        //
+        // r  = 0.02
+        // r² = 0.0004
+        //
+        // Since 0.0004 is greater than the current cutoff value
+        // of 0.0001, gravity will be calculated normally.
+        var firstBody = new Body(
+            position: new Vector3D(0, 0, 0),
+            velocity: new Vector3D(0, 0, 0),
+            mass: new Mass(1),
+            name: "First Body",
+            type: BodyType.Planet);
+
+        var secondBody = new Body(
+            position: new Vector3D(0.02, 0, 0),
+            velocity: new Vector3D(0, 0, 0),
+            mass: new Mass(1),
+            name: "Second Body",
+            type: BodyType.Planet);
+
+        var universe = new Universe();
+        universe.AddBody(firstBody);
+        universe.AddBody(secondBody);
+
+        var capturingIntegrator =
+            new CapturingIntegrator();
+
+        var physicsModel =
+            new NewtonianPhysicsModel(
+                capturingIntegrator);
+
+        const double deltaTime = 1;
+
+        // Act
+        physicsModel.Step(
+            universe,
+            deltaTime);
+
+        // Assert
+        // Acceleration produced by either body:
+        //
+        // a = G × M / r²
+        // a = 100 × 1 / 0.0004
+        // a = 250,000 position-units / time-unit²
+        //
+        // This is already five times greater than the integrator's
+        // current maximum stored speed of 50,000.
+        const double expectedAccelerationMagnitude =
+            250_000;
+
+        Assert.Equal(
+            expectedAccelerationMagnitude,
+            capturingIntegrator
+                .Accelerations[firstBody.Id]
+                .Magnitude(),
+            precision: 6);
+
+        Assert.Equal(
+            expectedAccelerationMagnitude,
+            capturingIntegrator
+                .Accelerations[secondBody.Id]
+                .Magnitude(),
+            precision: 6);
+    }
+
     private sealed class CapturingIntegrator
         : IIntegrator
     {
