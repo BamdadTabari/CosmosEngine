@@ -119,4 +119,44 @@ public sealed class SemiImplicitEulerIntegratorTests
             20_000,
             body.Velocity.Magnitude());
     }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(-0.001)]
+    [InlineData(double.NaN)]
+    [InlineData(double.PositiveInfinity)]
+    [InlineData(double.NegativeInfinity)]
+    public void Integrate_WhenDeltaTimeIsInvalid_ShouldThrow(
+    double invalidDeltaTime)
+    {
+        // Arrange
+        // Semi-implicit Euler requires a finite and strictly positive
+        // timestep. Zero, negative, NaN, or infinite time intervals
+        // do not represent a supported simulation step.
+        var body = new Body(
+            position: new Vector3D(0, 0, 0),
+            velocity: new Vector3D(1, 0, 0),
+            mass: new Mass(1),
+            name: "Test Body",
+            type: BodyType.Planet);
+
+        var integrator =
+            new SemiImplicitEulerIntegrator();
+
+        var acceleration =
+            new Vector3D(0, 0, 0);
+
+        // Act
+        Action integrate = () =>
+            integrator.Integrate(
+                body,
+                acceleration,
+                invalidDeltaTime);
+
+        // Assert
+        // Rejecting the value before calculation prevents an invalid
+        // timestep from contaminating position and velocity.
+        Assert.Throws<ArgumentOutOfRangeException>(
+            integrate);
+    }
 }

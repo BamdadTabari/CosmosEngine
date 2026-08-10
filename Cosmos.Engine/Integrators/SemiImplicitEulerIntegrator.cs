@@ -16,6 +16,21 @@ namespace Cosmos.Engine.Integrators
             Vector3D acceleration,
             double deltaTime)
         {
+            // A simulation timestep must be finite and strictly positive.
+            //
+            // Zero would perform no meaningful integration, a negative value
+            // would imply backward-time integration that this model does not
+            // support, and NaN or infinity would corrupt the body's state.
+            if (!double.IsFinite(deltaTime) ||
+                deltaTime <= 0)
+            {
+                throw new ArgumentOutOfRangeException(
+                    nameof(deltaTime),
+                    deltaTime,
+                    "Delta time must be finite and greater than zero.");
+            }
+
+
             // Semi-implicit Euler updates velocity before position:
             //
             //     v(t + Δt) = v(t) + a(t) × Δt
