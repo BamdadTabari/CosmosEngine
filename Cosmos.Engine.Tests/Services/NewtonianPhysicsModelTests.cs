@@ -177,6 +177,94 @@ public sealed class NewtonianPhysicsModelTests
             precision: 6);
     }
 
+
+    [Fact]
+    public void Step_AtEarthScale_ShouldRemainCloseToNewtonianGravity()
+    {
+        // Arrange
+        // These values match the normalized scale currently used by
+        // solar-system.json:
+        //
+        // Sun mass      = 100,000
+        // Earth distance = 150
+        // G              = 100
+        //
+        // The softening length is only 0.01, which is extremely small
+        // compared with the Earth-Sun distance. Therefore, softened
+        // gravity should remain almost identical to Newtonian gravity.
+        var sun = new Body(
+            position: new Vector3D(0, 0, 0),
+            velocity: new Vector3D(0, 0, 0),
+            mass: new Mass(100_000),
+            name: "Sun",
+            type: BodyType.Star);
+
+        var earth = new Body(
+            position: new Vector3D(150, 0, 0),
+            velocity: new Vector3D(0, 260, 0),
+            mass: new Mass(10),
+            name: "Earth",
+            type: BodyType.Planet);
+
+        var universe = new Universe();
+        universe.AddBody(sun);
+        universe.AddBody(earth);
+
+        var capturingIntegrator =
+            new CapturingIntegrator();
+
+        var physicsModel =
+            new NewtonianPhysicsModel(
+                capturingIntegrator);
+
+        const double deltaTime = 0.001;
+
+        // Expected acceleration from ordinary Newtonian gravity:
+        //
+        // a = G × M / r²
+        // a = 100 × 100,000 / 150²
+        // a ≈ 444.444444
+        const double gravitationalConstant = 100;
+        const double sunMass = 100_000;
+        const double distance = 150;
+
+        var expectedNewtonianAcceleration =
+            gravitationalConstant *
+            sunMass /
+            (distance * distance);
+
+        // Act
+        physicsModel.Step(
+            universe,
+            deltaTime);
+
+        var actualSoftenedAcceleration =
+            capturingIntegrator
+                .Accelerations[earth.Id]
+                .Magnitude();
+
+        var relativeDifference =
+            Math.Abs(
+                actualSoftenedAcceleration -
+                expectedNewtonianAcceleration) /
+            expectedNewtonianAcceleration;
+
+        // Assert
+        // Softening must not materially alter gravity at ordinary orbital
+        // distances. A relative difference below 1e-8 means the change is
+        // less than one part in one hundred million.
+        Assert.True(
+            relativeDifference < 1e-8,
+            $"Relative difference was {relativeDifference:E6}.");
+
+        // Earth is positioned on the positive X axis, so gravitational
+        // acceleration must point back toward the Sun on negative X.
+        Assert.True(
+            capturingIntegrator
+                .Accelerations[earth.Id]
+                .X < 0);
+    }
+
     private sealed class CapturingIntegrator
         : IIntegrator
     {
