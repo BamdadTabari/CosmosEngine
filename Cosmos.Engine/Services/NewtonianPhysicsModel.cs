@@ -57,12 +57,14 @@ namespace Cosmos.Engine.Services
             accelerations.Clear();
 
             // Phase 1:
-            // Calculate accelerations using the universe state
-            // at the beginning of the timestep.
+            // Calculate every body's acceleration from the shared universe
+            // state at the beginning of the timestep.
+            //
+            // No body is moved during this phase. This prevents an earlier body
+            // in the collection from affecting the acceleration calculation of
+            // a later body using a newer state.
             foreach (var body in universe.Bodies)
-            {
-                Vector3D totalAcceleration = new(0, 0, 0);
-                
+            {                
                 accelerations[body.Id] =
                     CalculateAcceleration(universe,body);
             }
@@ -113,22 +115,29 @@ namespace Cosmos.Engine.Services
                     offset.Normalize();
 
 
-                // Newton's law of universal gravitation:
-                // F = G * m1 * m2 / r²
-                var force =
-                GravitationalConstant *
-                body.Mass.Value *
-                other.Mass.Value /
-                distanceSquared;
-
-                // Newton's second law:
-                // F = m * a
-                // a = F / m
+                // Gravitational acceleration caused by the other body:
+                //
+                //     F = G × m₁ × m₂ / r²
+                //     a₁ = F / m₁
+                //
+                // Substituting force into Newton's second law:
+                //
+                //     a₁ = G × m₂ / r²
+                //
+                // The mass of the body being accelerated cancels out.
+                // Therefore, acceleration depends on the attracting body's mass,
+                // not on the current body's own mass.
                 var accelerationMagnitude =
-                    force / body.Mass.Value;
+                    GravitationalConstant *
+                    other.Mass.Value /
+                    distanceSquared;
 
+                // Convert the scalar acceleration magnitude into a vector pointing
+                // from the current body toward the attracting body, then add it to
+                // the acceleration produced by all previous bodies.
                 totalAcceleration +=
-                    direction * accelerationMagnitude;
+                    direction *
+                    accelerationMagnitude;
             }
 
             return totalAcceleration;
