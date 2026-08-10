@@ -50,11 +50,18 @@ public sealed class SemiImplicitEulerIntegratorTests
     }
 
     [Fact]
-    public void Integrate_WhenPositionExceedsMaximumDistance_ShouldClampBodyToBoundary()
+    public void Integrate_WhenBodyMovesFarFromOrigin_ShouldNotAlterCalculatedPosition()
     {
         // Arrange
-        // The body starts close to the current artificial boundary
-        // and moves far enough to cross it during this timestep.
+        // The body starts at 4,990,000 simulation length units
+        // from the coordinate origin.
+        //
+        // With a velocity of 20,000 length units per time unit
+        // and a timestep of one time unit, its expected position is:
+        //
+        // x_new = x_old + v_new × Δt
+        // x_new = 4,990,000 + 20,000 × 1
+        // x_new = 5,010,000
         var body = new Body(
             position: new Vector3D(4_990_000, 0, 0),
             velocity: new Vector3D(20_000, 0, 0),
@@ -77,15 +84,14 @@ public sealed class SemiImplicitEulerIntegratorTests
             deltaTime);
 
         // Assert
-        // Without the clamp, the new X position would be 5,010,000.
-        // The current implementation projects the body back onto
-        // the artificial spherical boundary at radius 5,000,000.
+        // Newtonian space has no artificial boundary in the current model.
+        // The integrator must preserve its calculated position instead of
+        // projecting the body back toward the coordinate origin.
         Assert.Equal(
-            5_000_000,
+            5_010_000,
             body.Position.Magnitude());
 
-        // The boundary changes position but does not alter velocity.
-        // Therefore, this is not a physical collision response.
+        // No acceleration was applied, so velocity remains unchanged.
         Assert.Equal(
             20_000,
             body.Velocity.Magnitude());

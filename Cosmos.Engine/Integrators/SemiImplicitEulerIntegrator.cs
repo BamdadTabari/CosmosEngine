@@ -24,16 +24,7 @@ namespace Cosmos.Engine.Integrators
         private const double MaximumSpeed =
             50_000;
 
-        // Emergency spatial guard expressed in simulation length units.
-        //
-        // This is not a physical boundary of the simulated universe.
-        // When a body crosses this radius, its position is projected back
-        // onto a sphere centered at the coordinate origin.
-        //
-        // Velocity is not changed, so this behavior is neither a collision
-        // response nor a physically meaningful boundary condition.
-        private const double MaximumDistanceFromOrigin =
-            5_000_000;
+        
 
         public void Integrate(
             Body body,
@@ -67,19 +58,7 @@ namespace Cosmos.Engine.Integrators
             }
 
             body.SetPosition(position);
-            var posMag = body.Position.Magnitude();
-
-            if (posMag > MaximumDistanceFromOrigin)
-            {
-                // Project the body radially back onto the artificial boundary.
-                //
-                // This changes position without changing velocity or applying
-                // a force, which makes the operation a numerical containment
-                // mechanism rather than a physical interaction.
-                body.SetPosition(
-                    body.Position.Normalize() *
-                    MaximumDistanceFromOrigin);
-            }
+            
             body.Acceleration = acceleration;
         }
     }
