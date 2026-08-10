@@ -159,4 +159,59 @@ public sealed class SemiImplicitEulerIntegratorTests
         Assert.Throws<ArgumentOutOfRangeException>(
             integrate);
     }
+
+    [Fact]
+    public void Integrate_WhenCalculatedStateIsNotFinite_ShouldThrowWithoutChangingBody()
+    {
+        // Arrange
+        // double.MaxValue is finite, but multiplying it by a timestep
+        // greater than one overflows the representable range of double.
+        //
+        // The position calculation becomes:
+        //
+        // x_new = 0 + double.MaxValue × 2
+        // x_new = PositiveInfinity
+        //
+        // The integrator must detect this invalid result before writing
+        // any part of the calculated state back into the body.
+        var body = new Body(
+            position: new Vector3D(0, 0, 0),
+            velocity: new Vector3D(
+                double.MaxValue,
+                0,
+                0),
+            mass: new Mass(1),
+            name: "Test Body",
+            type: BodyType.Planet);
+
+        var integrator =
+            new SemiImplicitEulerIntegrator();
+
+        var acceleration =
+            new Vector3D(0, 0, 0);
+
+        const double deltaTime = 2;
+
+        // Act
+        Action integrate = () =>
+            integrator.Integrate(
+                body,
+                acceleration,
+                deltaTime);
+
+        // Assert
+        Assert.Throws<ArithmeticException>(
+            integrate);
+
+        // State mutation must be atomic:
+        // if either calculated vector is invalid, neither position nor
+        // velocity should be partially committed to the body.
+        Assert.Equal(
+            0,
+            body.Position.X);
+
+        Assert.Equal(
+            double.MaxValue,
+            body.Velocity.X);
+    }
 }

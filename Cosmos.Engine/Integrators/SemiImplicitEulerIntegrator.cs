@@ -52,6 +52,18 @@ namespace Cosmos.Engine.Integrators
                 body.Position +
                 velocity * deltaTime;
 
+            // Numerical operations on double can overflow or propagate NaN.
+            //
+            // Unlike the old clamps, this check does not replace the calculated
+            // result with an arbitrary value. It exposes the instability and
+            // prevents an invalid state from entering the simulation.
+            if (!IsFinite(velocity) ||
+                !IsFinite(position))
+            {
+                throw new ArithmeticException(
+                    "Integration produced a non-finite position or velocity.");
+            }
+
             // Commit the complete state calculated for this timestep.
             //
             // No arbitrary speed or distance limits are applied here.
@@ -60,6 +72,20 @@ namespace Cosmos.Engine.Integrators
             body.SetVelocity(velocity);
             body.SetPosition(position);
             body.Acceleration = acceleration;
+        }
+
+private static bool IsFinite(
+    Vector3D vector)
+        {
+            // Every Cartesian component must be a real, finite number.
+            //
+            // Checking the components directly is safer than checking
+            // Magnitude(), because squaring very large but finite components
+            // can itself overflow while the vector components remain finite.
+            return
+                double.IsFinite(vector.X) &&
+                double.IsFinite(vector.Y) &&
+                double.IsFinite(vector.Z);
         }
     }
 }
