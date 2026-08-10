@@ -3,6 +3,7 @@ using Cosmos.Domain.Enums;
 using Cosmos.Domain.Structs;
 using Cosmos.Domain.ValueObjects;
 using Cosmos.Engine.Contracts;
+using Cosmos.Engine.Integrators;
 using Cosmos.Engine.Services;
 
 namespace Cosmos.Engine.Tests.Services;
@@ -263,6 +264,114 @@ public sealed class NewtonianPhysicsModelTests
             capturingIntegrator
                 .Accelerations[earth.Id]
                 .X < 0);
+    }
+
+    [Fact]
+    public void Step_ForEarthLikeInitialConditions_ShouldKeepOrbitBounded()
+    {
+        // Arrange
+        // This is an integration-style scientific test:
+        // NewtonianPhysicsModel calculates acceleration and
+        // SemiImplicitEulerIntegrator advances the bodies.
+        //
+        // Unlike tests using CapturingIntegrator, this test verifies
+        // their combined behavior over many consecutive timesteps.
+        var sun = new Body(
+            position: new Vector3D(0, 0, 0),
+            velocity: new Vector3D(0, 0, 0),
+            mass: new Mass(100_000),
+            name: "Sun",
+            type: BodyType.Star);
+
+        var earth = new Body(
+            position: new Vector3D(150, 0, 0),
+            velocity: new Vector3D(0, 260, 0),
+            mass: new Mass(10),
+            name: "Earth",
+            type: BodyType.Planet);
+
+        var universe = new Universe();
+        universe.AddBody(sun);
+        universe.AddBody(earth);
+
+        var integrator =
+            new SemiImplicitEulerIntegrator();
+
+        var physicsModel =
+            new NewtonianPhysicsModel(
+                integrator);
+
+        // The production simulation uses the same fixed timestep.
+        //
+        // A small fixed timestep reduces discretization error and makes
+        // repeated runs deterministic.
+        const double deltaTime = 0.001;
+
+        // Ten simulation time units cover multiple Earth-like orbits.
+        //
+        // The approximate orbital period is:
+        //
+        // T ≈ 2πr / v
+        // T ≈ 2π × 150 / 260
+        // T ≈ 3.62 simulation time units
+        //
+        // Therefore, 10,000 steps cover roughly 2.7 orbits.
+        const int stepCount = 10_000;
+
+        var minimumDistance =
+            double.PositiveInfinity;
+
+        var maximumDistance =
+            double.NegativeInfinity;
+
+        // Act
+        for (var step = 0;
+             step < stepCount;
+             step++)
+        {
+            physicsModel.Step(
+                universe,
+                deltaTime);
+
+            // Measure relative separation rather than Earth's distance
+            // from the coordinate origin, because the Sun is also allowed
+            // to respond to Earth's gravity and move slightly.
+            var separation =
+                (earth.Position - sun.Position)
+                .Magnitude();
+
+            minimumDistance =
+                Math.Min(
+                    minimumDistance,
+                    separation);
+
+            maximumDistance =
+                Math.Max(
+                    maximumDistance,
+                    separation);
+        }
+
+        // Assert
+        // The current initial speed is slightly greater than the exact
+        // circular-orbit speed, so a small radial variation is expected.
+        //
+        // These bounds intentionally verify qualitative orbital stability
+        // rather than demanding an unrealistically perfect circle.
+        Assert.True(
+            minimumDistance > 145,
+            $"Minimum separation was {minimumDistance:F6}.");
+
+        Assert.True(
+            maximumDistance < 160,
+            $"Maximum separation was {maximumDistance:F6}.");
+
+        // Explicit finite checks make numerical explosions easier to
+        // diagnose than a later failure in rendering or tracking.
+        Assert.True(
+            double.IsFinite(minimumDistance));
+
+        Assert.True(
+            double.IsFinite(maximumDistance));
     }
 
     private sealed class CapturingIntegrator
