@@ -9,15 +9,26 @@ namespace Cosmos.Engine.Tests.Integrators;
 public sealed class SemiImplicitEulerIntegratorTests
 {
     [Fact]
-    public void Integrate_WhenCalculatedVelocityExceedsMaximumSpeed_ShouldCalculatePositionBeforeVelocityClamp()
+    public void Integrate_WhenVelocityIsLarge_ShouldPreserveCalculatedVelocityAndPosition()
     {
         // Arrange
-        // With zero acceleration and a one-second timestep,
-        // the calculated velocity remains 60,000 units per second.
-        // This exceeds the integrator's current maximum speed of 50,000.
+        // The body starts from rest and receives a constant acceleration
+        // of 60,000 simulation length units per time unit².
+        //
+        // With a timestep of one simulation time unit:
+        //
+        // v_new = v_old + a × Δt
+        // v_new = 0 + 60,000 × 1
+        // v_new = 60,000
+        //
+        // Semi-implicit Euler then uses the new velocity:
+        //
+        // x_new = x_old + v_new × Δt
+        // x_new = 0 + 60,000 × 1
+        // x_new = 60,000
         var body = new Body(
             position: new Vector3D(0, 0, 0),
-            velocity: new Vector3D(60_000, 0, 0),
+            velocity: new Vector3D(0, 0, 0),
             mass: new Mass(1),
             name: "Test Body",
             type: BodyType.Planet);
@@ -26,7 +37,7 @@ public sealed class SemiImplicitEulerIntegratorTests
             new SemiImplicitEulerIntegrator();
 
         var acceleration =
-            new Vector3D(0, 0, 0);
+            new Vector3D(60_000, 0, 0);
 
         const double deltaTime = 1;
 
@@ -37,16 +48,28 @@ public sealed class SemiImplicitEulerIntegratorTests
             deltaTime);
 
         // Assert
-        // The current implementation calculates position using the
-        // unclamped velocity, so the body moves 60,000 units.
+        // The Newtonian integrator must return the velocity produced by
+        // its integration equation without applying an arbitrary limit.
+        //
+        // A very large result may indicate an unsuitable timestep or a
+        // close gravitational encounter, but silently changing that result
+        // would hide the numerical problem instead of diagnosing it.
+        Assert.Equal(
+            60_000,
+            body.Velocity.Magnitude());
+
+        // Semi-implicit Euler updates position using the newly calculated
+        // velocity, so the position must change by 60,000 units as well.
         Assert.Equal(
             60_000,
             body.Position.Magnitude());
 
-        // Velocity is clamped only after position has been calculated.
+        // Body.Acceleration records the acceleration actually used in
+        // this timestep, which keeps the body's final state internally
+        // understandable for diagnostics and rendering.
         Assert.Equal(
-            50_000,
-            body.Velocity.Magnitude());
+            60_000,
+            body.Acceleration.Magnitude());
     }
 
     [Fact]
