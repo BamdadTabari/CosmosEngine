@@ -10,7 +10,7 @@ namespace Cosmos.Engine.Tests.Services;
 public sealed class NewtonianPhysicsModelTests
 {
     [Fact]
-    public void Step_WhenBodiesAreCloserThanMinimumDistance_ShouldIgnoreTheirGravity()
+    public void Step_WhenBodiesAreVeryClose_ShouldProduceFiniteContinuousAcceleration()
     {
         // Arrange
         // The first body is placed at the coordinate origin.
@@ -63,27 +63,40 @@ public sealed class NewtonianPhysicsModelTests
             universe,
             deltaTime);
 
-        // Assert
-        // Without the minimum-distance guard, the acceleration
-        // magnitude produced by the second body would be:
         //
-        // a = G × M / r²
-        // a = 100 × 1 / 0.000025
-        // a = 4,000,000 position-units / time-unit²
-        //
-        // The current guard skips this interaction completely,
-        // so the integrator receives zero acceleration.
-        Assert.Equal(
-            0,
+        /// Assert
+        ////
+        var firstAcceleration =
             capturingIntegrator
-                .Accelerations[firstBody.Id]
-                .Magnitude());
+                .Accelerations[firstBody.Id];
 
-        Assert.Equal(
-            0,
+        var secondAcceleration =
             capturingIntegrator
-                .Accelerations[secondBody.Id]
-                .Magnitude());
+                .Accelerations[secondBody.Id];
+
+        // Gravity must remain active during a close encounter.
+        Assert.True(
+            firstAcceleration.Magnitude() > 0);
+
+        Assert.True(
+            secondAcceleration.Magnitude() > 0);
+
+        // Softening must prevent NaN and infinity from entering the state.
+        Assert.True(
+            double.IsFinite(firstAcceleration.X));
+
+        Assert.True(
+            double.IsFinite(secondAcceleration.X));
+
+        // Equal source masses at opposite sides produce equal acceleration
+        // magnitudes in opposite directions.
+        Assert.Equal(
+            firstAcceleration.Magnitude(),
+            secondAcceleration.Magnitude(),
+            precision: 6);
+
+        Assert.True(firstAcceleration.X > 0);
+        Assert.True(secondAcceleration.X < 0);
     }
 
 
@@ -131,16 +144,23 @@ public sealed class NewtonianPhysicsModelTests
             deltaTime);
 
         // Assert
-        // Acceleration produced by either body:
-        //
-        // a = G × M / r²
-        // a = 100 × 1 / 0.0004
-        // a = 250,000 position-units / time-unit²
-        //
-        // This is already five times greater than the integrator's
-        // current maximum stored speed of 50,000.
-        const double expectedAccelerationMagnitude =
-            250_000;
+        ///
+        const double distance = 0.02;
+        const double softeningLength = 0.01;
+        const double gravitationalConstant = 100;
+        const double attractingMass = 1;
+
+        var softenedDistanceSquared =
+            distance * distance +
+            softeningLength * softeningLength;
+
+        var expectedAccelerationMagnitude =
+            gravitationalConstant *
+            attractingMass *
+            distance /
+            Math.Pow(
+                softenedDistanceSquared,
+                1.5);
 
         Assert.Equal(
             expectedAccelerationMagnitude,

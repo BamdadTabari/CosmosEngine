@@ -28,17 +28,18 @@ namespace Cosmos.Engine.Services
         // of 150 produce a circular velocity close to Earth's value of 260.
         private const double GravitationalConstant = 100;
 
-        // Interactions closer than 0.01 simulation length units are
-        // currently ignored:
+        // Plummer softening length in normalized simulation length units.
         //
-        //     minimum distance² = 0.01² = 0.0001
+        // Point-mass Newtonian gravity approaches infinity as distance
+        // approaches zero. Because bodies currently have no physical radius
+        // or collision model, close encounters require a temporary numerical
+        // approximation.
         //
-        // This is a numerical safety guard, not a physical collision model
-        // and not gravitational softening. It creates a discontinuity:
-        // gravity is calculated immediately outside the threshold but
-        // becomes exactly zero inside it.
-        private const double MinimumInteractionDistanceSquared =
-            0.0001;
+        // Softening keeps acceleration finite and continuous without abruptly
+        // disabling gravity. It is not a physical body radius and should be
+        // reviewed when collision handling is introduced.
+        private const double GravitationalSofteningLength =
+            0.01;
 
         private readonly IIntegrator _integrator;
 
@@ -98,46 +99,45 @@ namespace Cosmos.Engine.Services
                 var distanceSquared =
                     offset.LengthSquared();
 
-                if (distanceSquared <
-                        MinimumInteractionDistanceSquared)
-                {
-                    // Ignore extremely close interactions to prevent division by
-                    // zero or an unbounded acceleration.
-                    //
-                    // This is only a temporary numerical guard. A future model
-                    // should handle close encounters explicitly through collision
-                    // handling, gravitational softening, or both.
-                    continue;
-                }
-
-                // Unit vector pointing from current body to the other body
-                var direction =
-                    offset.Normalize();
-
-
-                // Gravitational acceleration caused by the other body:
+                // Add Plummer softening to prevent the point-mass singularity:
                 //
-                //     F = G × m₁ × m₂ / r²
-                //     a₁ = F / m₁
+                //     softened r² = r² + ε²
                 //
-                // Substituting force into Newton's second law:
-                //
-                //     a₁ = G × m₂ / r²
-                //
-                // The mass of the body being accelerated cancels out.
-                // Therefore, acceleration depends on the attracting body's mass,
-                // not on the current body's own mass.
-                var accelerationMagnitude =
-                    GravitationalConstant *
-                    other.Mass.Value /
-                    distanceSquared;
+                // At distances much greater than ε, the result approaches ordinary
+                // Newtonian gravity. Near zero, acceleration remains finite and
+                // changes continuously instead of abruptly becoming zero.
+                var softeningSquared =
+                    GravitationalSofteningLength *
+                    GravitationalSofteningLength;
 
-                // Convert the scalar acceleration magnitude into a vector pointing
-                // from the current body toward the attracting body, then add it to
-                // the acceleration produced by all previous bodies.
+                var softenedDistanceSquared =
+                    distanceSquared +
+                    softeningSquared;
+
+                // Vector form of softened gravitational acceleration:
+                //
+                //              G × M × r⃗
+                //     a⃗ = ─────────────────
+                //          (r² + ε²)^(3/2)
+                //
+                // Using the offset vector directly avoids normalizing a zero-length
+                // vector and combines direction and magnitude in one calculation.
+                var inverseSoftenedDistanceCubed =
+                    1.0 /
+                    Math.Pow(
+                        softenedDistanceSquared,
+                        1.5);
+
+                var acceleration =
+                    offset *
+                    (
+                        GravitationalConstant *
+                        other.Mass.Value *
+                        inverseSoftenedDistanceCubed
+                    );
+
                 totalAcceleration +=
-                    direction *
-                    accelerationMagnitude;
+                    acceleration;
             }
 
             return totalAcceleration;
