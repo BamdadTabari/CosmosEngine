@@ -374,6 +374,129 @@ public sealed class NewtonianPhysicsModelTests
             double.IsFinite(maximumDistance));
     }
 
+    [Fact]
+    public void Step_ForEarthLikeOrbit_ShouldKeepEnergyDriftSmall()
+    {
+        // Arrange
+        // This test uses the same normalized Sun-Earth configuration
+        // as the orbital-bounds test.
+        var sun = new Body(
+            position: new Vector3D(0, 0, 0),
+            velocity: new Vector3D(0, 0, 0),
+            mass: new Mass(100_000),
+            name: "Sun",
+            type: BodyType.Star);
+
+        var earth = new Body(
+            position: new Vector3D(150, 0, 0),
+            velocity: new Vector3D(0, 260, 0),
+            mass: new Mass(10),
+            name: "Earth",
+            type: BodyType.Planet);
+
+        var universe = new Universe();
+        universe.AddBody(sun);
+        universe.AddBody(earth);
+
+        var physicsModel =
+            new NewtonianPhysicsModel(
+                new SemiImplicitEulerIntegrator());
+
+        const double deltaTime = 0.001;
+        const int stepCount = 10_000;
+
+        // Measure energy before advancing the simulation.
+        var initialEnergy =
+            CalculateTotalMechanicalEnergy(
+                sun,
+                earth);
+
+        // Act
+        for (var step = 0;
+             step < stepCount;
+             step++)
+        {
+            physicsModel.Step(
+                universe,
+                deltaTime);
+        }
+
+        var finalEnergy =
+            CalculateTotalMechanicalEnergy(
+                sun,
+                earth);
+
+        var relativeEnergyDrift =
+            Math.Abs(finalEnergy - initialEnergy) /
+            Math.Abs(initialEnergy);
+
+        // Assert
+        // Numerical integration is an approximation, so exact equality
+        // is neither expected nor scientifically appropriate.
+        //
+        // For the production timestep of 0.001, energy drift over roughly
+        // 2.7 orbits should remain below 0.1 percent.
+        Assert.True(
+            relativeEnergyDrift < 0.001,
+            $"Relative energy drift was " +
+            $"{relativeEnergyDrift:P8}. " +
+            $"Initial energy: {initialEnergy:F6}, " +
+            $"final energy: {finalEnergy:F6}.");
+    }
+
+    private static double CalculateTotalMechanicalEnergy(
+    Body firstBody,
+    Body secondBody)
+    {
+        const double gravitationalConstant = 100;
+        const double softeningLength = 0.01;
+
+        // Translational kinetic energy:
+        //
+        //     K = ½mv²
+        //
+        // LengthSquared is used because kinetic energy requires v²;
+        // calculating the magnitude and then squaring it would introduce
+        // an unnecessary square root.
+        var firstKineticEnergy =
+            0.5 *
+            firstBody.Mass.Value *
+            firstBody.Velocity.LengthSquared();
+
+        var secondKineticEnergy =
+            0.5 *
+            secondBody.Mass.Value *
+            secondBody.Velocity.LengthSquared();
+
+        var offset =
+            secondBody.Position -
+            firstBody.Position;
+
+        var softenedDistance =
+            Math.Sqrt(
+                offset.LengthSquared() +
+                softeningLength * softeningLength);
+
+        // Potential energy consistent with Plummer-softened gravity:
+        //
+        //              -Gm₁m₂
+        //     U = ─────────────────
+        //          √(r² + ε²)
+        //
+        // Using ordinary -Gm₁m₂/r here would make the diagnostic
+        // inconsistent with the force law used by the simulation.
+        var potentialEnergy =
+            -gravitationalConstant *
+            firstBody.Mass.Value *
+            secondBody.Mass.Value /
+            softenedDistance;
+
+        return
+            firstKineticEnergy +
+            secondKineticEnergy +
+            potentialEnergy;
+    }
+
     private sealed class CapturingIntegrator
         : IIntegrator
     {
