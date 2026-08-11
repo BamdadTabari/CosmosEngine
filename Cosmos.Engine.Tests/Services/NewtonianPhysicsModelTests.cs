@@ -444,6 +444,114 @@ public sealed class NewtonianPhysicsModelTests
             $"final energy: {finalEnergy:F6}.");
     }
 
+
+    [Fact]
+    public void Step_ForClosedTwoBodySystem_ShouldConserveLinearMomentum()
+    {
+        // Arrange
+        // The system contains only two bodies interacting through
+        // internal gravity. No external force is applied.
+        //
+        // The Sun initially remains at rest while Earth moves along
+        // the positive Y axis. Therefore, the system begins with a
+        // non-zero total momentum that should remain constant.
+        var sun = new Body(
+            position: new Vector3D(0, 0, 0),
+            velocity: new Vector3D(0, 0, 0),
+            mass: new Mass(100_000),
+            name: "Sun",
+            type: BodyType.Star);
+
+        var earth = new Body(
+            position: new Vector3D(150, 0, 0),
+            velocity: new Vector3D(0, 260, 0),
+            mass: new Mass(10),
+            name: "Earth",
+            type: BodyType.Planet);
+
+        var universe = new Universe();
+        universe.AddBody(sun);
+        universe.AddBody(earth);
+
+        var physicsModel =
+            new NewtonianPhysicsModel(
+                new SemiImplicitEulerIntegrator());
+
+        const double deltaTime = 0.001;
+        const int stepCount = 10_000;
+
+        var initialMomentum =
+            CalculateTotalLinearMomentum(
+                sun,
+                earth);
+
+        // Act
+        for (var step = 0;
+             step < stepCount;
+             step++)
+        {
+            physicsModel.Step(
+                universe,
+                deltaTime);
+        }
+
+        var finalMomentum =
+            CalculateTotalLinearMomentum(
+                sun,
+                earth);
+
+        var momentumChange =
+            finalMomentum -
+            initialMomentum;
+
+        var relativeMomentumDrift =
+            momentumChange.Magnitude() /
+            initialMomentum.Magnitude();
+
+        // Assert
+        // Small floating-point rounding errors are expected, but the
+        // two-phase force calculation should keep momentum drift extremely
+        // small by calculating both accelerations from the same state.
+        Assert.True(
+            relativeMomentumDrift < 1e-9,
+            $"Relative momentum drift was " +
+            $"{relativeMomentumDrift:E12}. " +
+            $"Initial momentum: " +
+            $"({initialMomentum.X:F12}, " +
+            $"{initialMomentum.Y:F12}, " +
+            $"{initialMomentum.Z:F12}). " +
+            $"Final momentum: " +
+            $"({finalMomentum.X:F12}, " +
+            $"{finalMomentum.Y:F12}, " +
+            $"{finalMomentum.Z:F12}).");
+    }
+
+
+
+    private static Vector3D CalculateTotalLinearMomentum(
+    Body firstBody,
+    Body secondBody)
+    {
+        // Linear momentum of one body:
+        //
+        //     p⃗ = m × v⃗
+        //
+        // Total momentum is the vector sum of the individual momenta.
+        // Unlike kinetic energy, momentum has direction; therefore,
+        // its X, Y, and Z components must all participate in the sum.
+        var firstMomentum =
+            firstBody.Velocity *
+            firstBody.Mass.Value;
+
+        var secondMomentum =
+            secondBody.Velocity *
+            secondBody.Mass.Value;
+
+        return
+            firstMomentum +
+            secondMomentum;
+    }
+
     private static double CalculateTotalMechanicalEnergy(
     Body firstBody,
     Body secondBody)
