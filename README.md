@@ -1,6 +1,7 @@
 # Cosmos Engine 🚀
 
-<img width="1281" height="718" alt="Cosmos Engine 3D simulation" src="https://github.com/user-attachments/assets/e666bb4b-2f72-4da0-931d-6067666da88e" />
+<img width="1067" height="910" alt="cosmos engine" src="https://github.com/user-attachments/assets/f46ec16d-3a93-436a-bb52-2f22dfde924e" />
+
 
 **Cosmos Engine** is an open-source C#/.NET project for learning orbital mechanics, numerical simulation, and computational physics through implementation.
 
