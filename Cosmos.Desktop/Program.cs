@@ -80,10 +80,10 @@ SetConfigFlags(
     ConfigFlags.HighDpiWindow |
     ConfigFlags.ResizableWindow);
 
-SetConfigFlags(ConfigFlags.FullscreenMode);
-SetConfigFlags(
-    ConfigFlags.HighDpiWindow);
-InitWindow(width, height, "Cosmos Engine");
+InitWindow(
+    width,
+    height,
+    "Cosmos Engine");
 
 var renderer =
     new UniverseRenderer(
@@ -93,8 +93,8 @@ var renderer =
 SetTraceLogLevel(TraceLogLevel.None);
 
 
-//SetTargetFPS(60);
-SetTargetFPS(144);
+SetTargetFPS(60);
+//SetTargetFPS(144);
 DisableCursor();
 
 var sun =

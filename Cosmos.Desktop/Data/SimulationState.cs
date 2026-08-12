@@ -9,7 +9,12 @@ namespace Cosmos.Desktop
 {
     public sealed class SimulationState
     {
-        public int SimulationSpeed { get; set; } = 100;
+        // Start at real-time simulation speed.
+        //
+        // Higher time scales require more fixed physics steps per rendered
+        // frame. Starting at 100x can overload the main thread before the
+        // application has enough time to process input and rendering.
+        public int SimulationSpeed { get; set; } = 1;
 
         public bool Paused { get; set; }
 
