@@ -526,7 +526,110 @@ public sealed class NewtonianPhysicsModelTests
             $"{finalMomentum.Z:F12}).");
     }
 
+    [Fact]
+    public void Step_WhenDeltaTimeIsReduced_ShouldReduceMaximumEnergyDrift()
+    {
+        // Arrange
+        // Both simulations cover exactly the same amount of simulation time.
+        //
+        // Only the timestep changes:
+        //
+        // coarse: Δt = 0.002 → 5,000 steps
+        // fine:   Δt = 0.001 → 10,000 steps
+        //
+        // This isolates timestep size as the variable being tested.
+        const double simulationDuration = 10;
 
+        // Act
+        var coarseTimeStepDrift =
+            MeasureMaximumRelativeEnergyDrift(
+                deltaTime: 0.002,
+                simulationDuration);
+
+        var fineTimeStepDrift =
+            MeasureMaximumRelativeEnergyDrift(
+                deltaTime: 0.001,
+                simulationDuration);
+
+        // Assert
+        // Semi-implicit Euler is still an approximation.
+        //
+        // Reducing the timestep should reduce the maximum numerical
+        // deviation in total mechanical energy over the same physical
+        // simulation duration.
+        Assert.True(
+            fineTimeStepDrift < coarseTimeStepDrift,
+            $"Expected smaller timestep to reduce energy drift. " +
+            $"Coarse drift: {coarseTimeStepDrift:E12}, " +
+            $"fine drift: {fineTimeStepDrift:E12}.");
+    }
+
+    private static double MeasureMaximumRelativeEnergyDrift(
+    double deltaTime,
+    double simulationDuration)
+    {
+        var sun = new Body(
+            position: new Vector3D(0, 0, 0),
+            velocity: new Vector3D(0, 0, 0),
+            mass: new Mass(100_000),
+            name: "Sun",
+            type: BodyType.Star);
+
+        var earth = new Body(
+            position: new Vector3D(150, 0, 0),
+            velocity: new Vector3D(0, 260, 0),
+            mass: new Mass(10),
+            name: "Earth",
+            type: BodyType.Planet);
+
+        var universe = new Universe();
+
+        universe.AddBody(sun);
+        universe.AddBody(earth);
+
+        var physicsModel =
+            new NewtonianPhysicsModel(
+                new SemiImplicitEulerIntegrator());
+
+        var initialEnergy =
+            CalculateTotalMechanicalEnergy(
+                sun,
+                earth);
+
+        var stepCount =
+            (int)Math.Round(
+                simulationDuration /
+                deltaTime);
+
+        var maximumRelativeEnergyDrift = 0.0;
+
+        for (var step = 0;
+             step < stepCount;
+             step++)
+        {
+            physicsModel.Step(
+                universe,
+                deltaTime);
+
+            var currentEnergy =
+                CalculateTotalMechanicalEnergy(
+                    sun,
+                    earth);
+
+            var relativeEnergyDrift =
+                Math.Abs(
+                    currentEnergy -
+                    initialEnergy) /
+                Math.Abs(initialEnergy);
+
+            maximumRelativeEnergyDrift =
+                Math.Max(
+                    maximumRelativeEnergyDrift,
+                    relativeEnergyDrift);
+        }
+
+        return maximumRelativeEnergyDrift;
+    }
 
     private static Vector3D CalculateTotalLinearMomentum(
     Body firstBody,
