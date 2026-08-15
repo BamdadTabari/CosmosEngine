@@ -31,7 +31,9 @@ public sealed class InputHandler
 
         HandleControlledBody(state, universe);
 
-        TransferPlanet(state);
+        TransferPlanet(
+            state,
+            universe);
     }
 
     public void FullScreen()
@@ -120,12 +122,19 @@ public sealed class InputHandler
         state.ControlledBody =
             spacecrafts[current];
     }
-
     // TODO:
-    // Temporary Hohmann transfer test.
-    // Will be replaced by Mission Planner.
+    // Temporary heliocentric Hohmann transfer experiment.
+    //
+    // Current scientific contract:
+    // - Maneuvering body: controlled spacecraft
+    // - Central body: Sun
+    // - Reference: relative spacecraft-to-Sun position
+    // - Target orbit: 1.5 times the current orbital radius
+    //
+    // This will eventually be replaced by a proper Mission Planner.
     private void TransferPlanet(
-     SimulationState state)
+        SimulationState state,
+        Universe universe)
     {
         if (!IsKeyPressed(
             KeyboardKey.H))
@@ -133,18 +142,51 @@ public sealed class InputHandler
             return;
         }
 
-        var target =
-            state.Camera.Target;
+        // The camera target is a presentation concept.
+        // The controlled spacecraft is the body that actually performs
+        // the orbital maneuver.
+        var spacecraft =
+            state.ControlledBody;
 
-        if (target is null)
+        if (spacecraft is null ||
+            spacecraft.Type != BodyType.Spacecraft)
         {
             return;
         }
 
-        var currentRadius =
-            target.Position
-                .Magnitude();
+        // The current experimental Hohmann model is heliocentric,
+        // so the Sun is explicitly treated as the central body.
+        var centralBody =
+            universe.FindBody("Sun");
 
+        if (centralBody is null)
+        {
+            return;
+        }
+
+        // Orbital radius is a relative distance:
+        //
+        //     r⃗ = x⃗_spacecraft - x⃗_centralBody
+        //     r  = |r⃗|
+        //
+        // Using spacecraft.Position.Magnitude() would instead measure
+        // distance from the global coordinate origin.
+        var relativePosition =
+            spacecraft.Position -
+            centralBody.Position;
+
+        var currentRadius =
+            relativePosition.Magnitude();
+
+        if (!double.IsFinite(currentRadius) ||
+            currentRadius <= 0)
+        {
+            return;
+        }
+
+        // Temporary experiment:
+        // raise the target circular orbit to 1.5 times
+        // the current heliocentric orbital radius.
         var targetRadius =
             currentRadius * 1.5;
 
@@ -159,10 +201,12 @@ public sealed class InputHandler
         state.CurrentPlan =
             plan;
 
+        // Important:
+        // the spacecraft receives the maneuver,
+        // not whichever object the camera happens to observe.
         state.BurnTarget =
-            target;
-        state.CurrentPlan = plan;
-        state.BurnTarget = target;
+            spacecraft;
+
         state.BurnState.BurnStep = 0;
         state.BurnState.BurnTimer = 0;
 
