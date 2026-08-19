@@ -37,11 +37,24 @@ public sealed class ManeuverExecutionSystemTests
         var unrelatedInitialVelocity =
             unrelatedBody.Velocity;
 
+        var centralBody = new Body(
+        position: new Vector3D(0, 0, 0),
+        velocity: new Vector3D(0, 0, 0),
+        mass: new Mass(100_000),
+        name: "Sun",
+        type: BodyType.Star);
+
+        var referenceContext =
+            new ReferenceContext(
+                ReferenceFrame.BodyCentered,
+                centralBody);
+
         var plan = new ManeuverPlan(
             DeltaV1: 5,
             DeltaV2: 2,
             TotalDeltaV: 7,
-            TransferTime: 10);
+            TransferTime: 10,
+            ReferenceContext: referenceContext);
 
         var burnState =
             new BurnExecutionState();
@@ -79,6 +92,90 @@ public sealed class ManeuverExecutionSystemTests
             unrelatedBody.Velocity);
 
         // Burn #1 has completed, so execution advances to the waiting stage.
+        Assert.Equal(
+            1,
+            burnState.BurnStep);
+    }
+
+    [Fact]
+    public void Update_WhenCentralBodyIsOffsetFromOrigin_ShouldUseRelativeOrbitalDirection()
+    {
+        // Arrange
+        // The Sun is deliberately NOT at the global origin.
+        //
+        // This prevents the test from accidentally passing because
+        // "central body" and "coordinate origin" happen to coincide.
+        var sun = new Body(
+            position: new Vector3D(100, 100, 0),
+            velocity: new Vector3D(0, 0, 0),
+            mass: new Mass(100_000),
+            name: "Sun",
+            type: BodyType.Star);
+
+        // Relative spacecraft position:
+        //
+        //     (100, 200, 0)
+        //   - (100, 100, 0)
+        //   ----------------
+        //     (0, 100, 0)
+        //
+        // Therefore the normalized radial direction is:
+        //
+        //     r̂ = (0, 1, 0)
+        //
+        // Rotating that +90° in the current XY-plane model gives:
+        //
+        //     t̂ = (-1, 0, 0)
+        var spacecraft = new Body(
+            position: new Vector3D(100, 200, 0),
+            velocity: new Vector3D(-10, 0, 0),
+            mass: new Mass(1),
+            name: "Explorer-1",
+            type: BodyType.Spacecraft);
+
+        var referenceContext =
+            new ReferenceContext(
+                ReferenceFrame.BodyCentered,
+                sun);
+
+        var plan = new ManeuverPlan(
+            DeltaV1: 5,
+            DeltaV2: 2,
+            TotalDeltaV: 7,
+            TransferTime: 10,
+            ReferenceContext: referenceContext);
+
+        var burnState =
+            new BurnExecutionState();
+
+        var system =
+            new ManeuverExecutionSystem();
+
+        // Act
+        system.Update(
+            spacecraft,
+            plan,
+            dt: 0.001,
+            burnState);
+
+        // Assert
+        //
+        // Initial velocity:
+        //
+        //     (-10, 0, 0)
+        //
+        // Burn:
+        //
+        //     5 × (-1, 0, 0)
+        //     = (-5, 0, 0)
+        //
+        // Final:
+        //
+        //     (-15, 0, 0)
+        Assert.Equal(
+            new Vector3D(-15, 0, 0),
+            spacecraft.Velocity);
+
         Assert.Equal(
             1,
             burnState.BurnStep);

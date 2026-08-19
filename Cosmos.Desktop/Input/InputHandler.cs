@@ -1,5 +1,6 @@
 ﻿using Cosmos.Domain.Entities;
 using Cosmos.Domain.Enums;
+using Cosmos.Domain.ValueObjects;
 using Cosmos.Engine.Maneuvers;
 using Raylib_cs;
 using static Raylib_cs.Raylib;
@@ -192,11 +193,19 @@ public sealed class InputHandler
 
         var planner =
             new ManeuverPlanner();
+        
+        // The maneuver is defined in a body-centered frame.
+        // For the current experiment, the Sun is the central body.
+        var referenceContext =
+            new ReferenceContext(
+                ReferenceFrame.BodyCentered,
+                centralBody);
 
         var plan =
             planner.PlanTransfer(
                 currentRadius,
-                targetRadius);
+                targetRadius,
+                referenceContext);
 
         state.CurrentPlan =
             plan;

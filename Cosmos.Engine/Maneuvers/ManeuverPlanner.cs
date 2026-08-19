@@ -1,17 +1,17 @@
-﻿using Cosmos.Engine.Calculators;
-using Cosmos.Engine.Models;
+﻿using Cosmos.Domain.ValueObjects;
+using Cosmos.Engine.Calculators;
 
 namespace Cosmos.Engine.Maneuvers;
 
 public sealed class ManeuverPlanner
 {
-
     private readonly HohmannTransferCalculator
-    _hohmannCalculator = new();
+        _hohmannCalculator = new();
 
     public ManeuverPlan PlanTransfer(
-    double currentOrbitRadius,
-    double targetOrbitRadius)
+        double currentOrbitRadius,
+        double targetOrbitRadius,
+        ReferenceContext referenceContext)
     {
         var transfer =
             _hohmannCalculator.Calculate(
@@ -22,6 +22,7 @@ public sealed class ManeuverPlanner
             transfer.DeltaV1,
             transfer.DeltaV2,
             transfer.TotalDeltaV,
-            transfer.TransferTime);
+            transfer.TransferTime,
+            referenceContext);
     }
 }
