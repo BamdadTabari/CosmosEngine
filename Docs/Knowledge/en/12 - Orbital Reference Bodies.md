@@ -426,6 +426,10 @@ If another body becomes the central body, its mass must determine the appropriat
 
 Relative Velocity
 
+For the current Hohmann maneuver model, the prograde burn direction
+must therefore be derived from the spacecraft velocity relative to
+the central body rather than from its global velocity.
+
 The same idea also applies to velocity.
 
 If both bodies are moving, the spacecraft's orbital velocity relative to the central body is:

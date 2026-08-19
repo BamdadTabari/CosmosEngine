@@ -66,45 +66,37 @@ public sealed class ManeuverExecutionSystem
     }
 
     private static void ApplyBurn(
-        Body body,
-        Body centralBody,
-        double deltaV)
+      Body body,
+      Body centralBody,
+      double deltaV)
     {
         var velocity =
             body.Velocity;
 
-        // Orbital geometry must be measured relative to
-        // the physical central body, not the global origin.
+        // Orbital velocity must be measured relative to
+        // the central body:
         //
-        // r⃗ = x⃗_spacecraft - x⃗_centralBody
-        var relativePosition =
-            body.Position -
-            centralBody.Position;
+        // v⃗_rel = v⃗_spacecraft - v⃗_centralBody
+        //
+        // A shared translational velocity of the whole system
+        // must not change the physical meaning of the maneuver.
+        var relativeVelocity =
+            body.Velocity -
+            centralBody.Velocity;
 
-        var radial =
-            relativePosition.Normalize();
-
-        // Current simplified model:
-        // rotate the radial direction by +90 degrees
-        // in the XY orbital plane to obtain the tangent.
+        // For the current Hohmann approximation, the burn occurs
+        // where the orbital velocity is assumed to be tangential.
         //
-        // This still assumes:
-        // - XY-plane orbit
-        // - counter-clockwise prograde direction
-        //
-        // Those assumptions will be reviewed separately.
-        var tangent =
-            new Vector3D(
-                -radial.Y,
-                 radial.X,
-                 0)
-            .Normalize();
+        // Therefore the current relative velocity defines
+        // the prograde direction.
+        var progradeDirection =
+            relativeVelocity.Normalize();
 
         // Instantaneous impulsive burn:
         //
-        // v⃗_new = v⃗_old + Δv * t̂
+        // v⃗_new = v⃗_global + Δv * v̂_rel
         body.SetVelocity(
             velocity +
-            tangent * deltaV);
-    }
+            progradeDirection * deltaV);
+    }   
 }

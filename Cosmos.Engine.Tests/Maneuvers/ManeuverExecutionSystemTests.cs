@@ -180,4 +180,91 @@ public sealed class ManeuverExecutionSystemTests
             1,
             burnState.BurnStep);
     }
+
+    [Fact]
+    public void Update_WhenCentralBodyIsMoving_ShouldUseRelativeVelocityForProgradeDirection()
+    {
+        // Arrange
+        // The Sun itself is moving through the global coordinate frame.
+        var sun = new Body(
+            position: new Vector3D(0, 0, 0),
+            velocity: new Vector3D(100, 50, 0),
+            mass: new Mass(100_000),
+            name: "Sun",
+            type: BodyType.Star);
+
+        // Global spacecraft velocity:
+        //
+        //     v_ship = (100, 40, 0)
+        //
+        // Sun velocity:
+        //
+        //     v_sun = (100, 50, 0)
+        //
+        // Therefore the orbital velocity relative to the Sun is:
+        //
+        //     v_rel = v_ship - v_sun
+        //           = (0, -10, 0)
+        //
+        // So the spacecraft is moving in the negative Y direction
+        // relative to the Sun.
+        var spacecraft = new Body(
+            position: new Vector3D(100, 0, 0),
+            velocity: new Vector3D(100, 40, 0),
+            mass: new Mass(1),
+            name: "Explorer-1",
+            type: BodyType.Spacecraft);
+
+        var referenceContext =
+            new ReferenceContext(
+                ReferenceFrame.BodyCentered,
+                sun);
+
+        var plan = new ManeuverPlan(
+            DeltaV1: 5,
+            DeltaV2: 2,
+            TotalDeltaV: 7,
+            TransferTime: 10,
+            ReferenceContext: referenceContext);
+
+        var burnState =
+            new BurnExecutionState();
+
+        var system =
+            new ManeuverExecutionSystem();
+
+        // Act
+        system.Update(
+            spacecraft,
+            plan,
+            dt: 0.001,
+            burnState);
+
+        // Assert
+        //
+        // Relative velocity before burn:
+        //
+        //     (0, -10, 0)
+        //
+        // Prograde Δv:
+        //
+        //     (0, -5, 0)
+        //
+        // Relative velocity after burn:
+        //
+        //     (0, -15, 0)
+        //
+        // Therefore global spacecraft velocity becomes:
+        //
+        //     Sun velocity + relative velocity
+        //     (100, 50, 0) + (0, -15, 0)
+        //     = (100, 35, 0)
+        Assert.Equal(
+            new Vector3D(100, 35, 0),
+            spacecraft.Velocity);
+
+        Assert.Equal(
+            1,
+            burnState.BurnStep);
+    }
 }
